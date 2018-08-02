@@ -8,7 +8,7 @@ import re
 from lxml import etree
 
 PATH = os.path.dirname(os.path.abspath(__file__))
-SCHEMA = os.path.join(PATH, 'schemas/nfe_v3.10.xsd')
+SCHEMA = os.path.join(PATH, 'schemas/nfe_v4.00.xsd')
 
 
 def pop_encoding(xml):

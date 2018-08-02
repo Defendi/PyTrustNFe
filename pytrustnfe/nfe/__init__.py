@@ -18,20 +18,18 @@ from pytrustnfe.exceptions import NFeValidationException
 
 def _build_header(method, **kwargs):
     action = {
-        'NfeAutorizacao': ('NfeAutorizacao', '3.10'),
-        'NfeRetAutorizacao': ('NfeRetAutorizacao', '3.10'),
-        'NfeConsultaCadastro': ('CadConsultaCadastro2', '2.00'),
-        'NfeInutilizacao': ('NfeInutilizacao2', '3.10'),
-        'RecepcaoEventoCancelamento': ('RecepcaoEvento', '1.00'),
-        'RecepcaoEventoCarta': ('RecepcaoEvento', '1.00'),
-        'NFeDistribuicaoDFe': ('NFeDistribuicaoDFe/nfeDistDFeInteresse',
-                               '1.00'),
+        'NfeAutorizacao': ('NfeAutorizacao4', '4.00'),
+        'NfeRetAutorizacao': ('NfeRetAutorizacao4', '4.00'),
+        'NfeConsultaCadastro': ('CadConsultaCadastro4', '2.00'),
+        'NfeInutilizacao': ('NfeInutilizacao4', '4.00'),
+        'RecepcaoEventoCancelamento': ('RecepcaoEvento4', '4.00'),
+        'RecepcaoEventoCarta': ('RecepcaoEvento4', '4.00'),
+        'NFeDistribuicaoDFe': ('NFeDistribuicaoDFe/nfeDistDFeInteresse', '1.00'),
         'RecepcaoEventoManifesto': ('RecepcaoEvento', '1.00'),
-        'NfeConsulta2': ('NfeConsulta2', '3.10')
     }
     # Método específico para o estado da Bahia
     if kwargs['estado'] == '29':
-        action['NfeConsulta2'] = ('NfeConsulta', '3.10')
+        action['NfeConsulta2'] = ('NfeConsulta', '4.00')
     vals = {'estado': kwargs['estado'],
             'soap_action': action[method][0],
             'versao': action[method][1]}
