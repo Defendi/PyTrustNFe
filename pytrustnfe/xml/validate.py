@@ -30,7 +30,7 @@ def valida_nfe(nfe):
     mensagens = []
     for erro in erros:
         campo = re.findall(r"'([^']*)'", erro)[0]
-        nome = campo[campo.find('}') + 1: ]
+        nome = campo[campo.find('}') + 1:]
         valor = nfe.find('.//' + campo).text
         if 'Expected is' in erro:
             expected_name = re.findall('\(.*?\)', erro)

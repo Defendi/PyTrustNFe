@@ -815,25 +815,26 @@
             </cobr>
             {% endif %}
             {% endif %}
+            {% if NFe.infNFe.pag is defined %}
             <pag>
+                {% for pag in NFe.infNFe.pag %}
                 <detPag>
-                    {% if NFe.infNFe.pag.detPag is defined %}
-                    {% with pg = NFe.infNFe.pag.detPag %}
-                    <indPag>{{ pg.indPag }}</indPag>
-                    <tPag>{{ pg.tPag }}</tPag>
-                    <vPag>{{ pg.vPag }}</vPag>
-                    {% if pg.card is defined %}
+                    <indPag>{{ pag.indPag }}</indPag>
+                    <tPag>{{ pag.tPag }}</tPag>
+                    <vPag>{{ pag.vPag }}</vPag>
+                    {% if pag.card is defined %}
                     <card>
-                        <CNPJ>{{ pg.card.CNPJ }}</CNPJ>
-                        <tBand>{{ pg.card.tBand }}</tBand>
-                        <cAut>{{ pg.card.cAut }}</cAut>
+                        <tpIntegra>{{ pag.card.tpIntegra }}</tpIntegra>
+                        <CNPJ>{{ pag.card.CNPJ }}</CNPJ>
+                        <tBand>{{ pag.card.tBand }}</tBand>
+                        <cAut>{{ pag.card.cAut }}</cAut>
                     </card>
-					{% endif %}
-					{% endwith %}
                     {% endif %}
                 </detPag>
-                <vTroco>{{ NFe.infNFe.pag.vTroco }}</vTroco>
+                <vTroco>{{ pag.vTroco }}</vTroco>
+                {% endfor %}
             </pag>
+            {% endif %}
             <infAdic>
                 <infAdFisco>{{ NFe.infNFe.infAdic.infAdFisco|normalize|escape }}</infAdFisco>
                 <infCpl>{{ NFe.infNFe.infAdic.infCpl|normalize|escape }}</infCpl>
