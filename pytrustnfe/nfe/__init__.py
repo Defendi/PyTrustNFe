@@ -18,11 +18,11 @@ from pytrustnfe.exceptions import NFeValidationException
 
 def _build_header(method, **kwargs):
     action = {
-        'NfeAutorizacao': ('NfeAutorizacao4', '4.00'),
+        'NfeAutorizacao': ('NfeAutorizacao', '4.00'),
         'NfeRetAutorizacao': ('NfeRetAutorizacao4', '4.00'),
         'NfeConsultaCadastro': ('CadConsultaCadastro4', '2.00'),
         'NfeInutilizacao': ('NfeInutilizacao4', '4.00'),
-        'RecepcaoEventoCancelamento': ('RecepcaoEvento4', '4.00'),
+        'RecepcaoEventoCancelamento': ('RecepcaoEvento', '1.00'),
         'RecepcaoEventoCarta': ('RecepcaoEvento4', '4.00'),
         'NFeDistribuicaoDFe': ('NFeDistribuicaoDFe/nfeDistDFeInteresse', '1.00'),
         'RecepcaoEventoManifesto': ('RecepcaoEvento', '1.00'),
@@ -128,7 +128,10 @@ def _add_qrCode(xml, **kwargs):
 
 def _send(certificado, method, sign, **kwargs):
     path = os.path.join(os.path.dirname(__file__), 'templates')
-    xmlElem_send = render_xml(path, '%s.xml' % method, True, **kwargs)
+    if method in ['RecepcaoEventoCancelamento']:
+        xmlElem_send = render_xml(path, 'RecepcaoEvento.xml', True, **kwargs)
+    else:
+        xmlElem_send = render_xml(path, '%s.xml' % method, True, **kwargs)
     modelo = xmlElem_send.find(".//{http://www.portalfiscal.inf.br/nfe}mod")
     modelo = modelo.text if modelo is not None else '55'
     if modelo == '65':
