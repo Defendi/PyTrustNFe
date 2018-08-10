@@ -1,7 +1,8 @@
 # coding=utf-8
 from setuptools import setup, find_packages
 
-VERSION = "0.1.52"
+VERSION = "1.0.0"
+
 
 setup(
     name="PyTrustNFe",
