@@ -2,11 +2,12 @@
 # © 2016 Danimar Ribeiro, Trustcode
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-
+import logging
 import os
 import hashlib
 import binascii
 from lxml import etree
+from collections import deque
 from .assinatura import Assinatura
 from pytrustnfe.xml import render_xml, sanitize_response
 from pytrustnfe.utils import gerar_chave, ChaveNFe
@@ -17,7 +18,54 @@ from pytrustnfe.certificado import extract_cert_and_key_from_pfx, save_cert_key
 from requests import Session
 from zeep import Client
 from zeep.transports import Transport
+from zeep.plugins import HistoryPlugin
+from zeep import Plugin
 
+# Plugin do Zeep para incluir o namespace e gerar o log do envio
+class MyLoggingPlugin(Plugin):
+
+    def __init__(self, maxlen=1):
+        self._buffer = deque([], maxlen)
+
+    @property
+    def last_sent(self):
+        last_tx = self._buffer[-1]
+        if last_tx:
+            return last_tx['sent']
+
+    @property
+    def last_received(self):
+        last_tx = self._buffer[-1]
+        if last_tx:
+            return last_tx['received']
+
+    def ingress(self, envelope, http_headers, operation):
+        last_tx = self._buffer[-1]
+        last_tx['received'] = {
+            'envelope': envelope,
+            'http_headers': http_headers,
+            'operation': operation,
+        }
+        #_logger.info(etree.tostring(envelope, pretty_print=True))
+        return envelope, http_headers
+
+    def egress(self, envelope, http_headers, operation, binding_options):
+        try:
+            NFe = envelope[0][0][0][2]
+            if NFe:
+                NFe.set('xmlns','http://www.portalfiscal.inf.br/nfe')
+        except:
+            pass
+        self._buffer.append({
+            'received': None,
+            'sent': {
+                'envelope': envelope,
+                'http_headers': http_headers,
+                'operation': operation,
+            },
+        })
+        #_logger.info(etree.tostring(envelope, pretty_print=True))
+        return envelope, http_headers
 
 def _generate_nfe_id(**kwargs):
     for item in kwargs['NFes']:
@@ -130,16 +178,19 @@ def _send(certificado, method, **kwargs):
     transport = Transport(session=session)
 
     xml = etree.fromstring(xml_send)
-    client = Client(base_url, transport=transport)
+    history = MyLoggingPlugin()
+    client = Client(base_url, transport=transport, plugins=[history])
 
     port = next(iter(client.wsdl.port_types))
     first_operation = [x for x in iter(
         client.wsdl.port_types[port].operations) if "Zip" not in x][0]
+
     with client.settings(raw_response=True):
         response = client.service[first_operation](xml)
         response, obj = sanitize_response(response.text)
         return {
             'sent_xml': xml_send,
+            'sent_raw_xml': history.last_sent,
             'received_xml': response,
             'object': obj.Body.getchildren()[0]
         }
