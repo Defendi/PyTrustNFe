@@ -239,6 +239,11 @@ def inutilizar_nfe(certificado, **kwargs):
         kwargs['xml'] = xml_inutilizar_nfe(certificado, **kwargs)
     return _send(certificado, 'NfeInutilizacao', **kwargs)
 
+def inutilizar_nfe(certificado, **kwargs):
+    if "xml" not in kwargs:
+        kwargs['xml'] = xml_inutilizar_nfe(certificado, **kwargs)
+    return _send(certificado, 'NfeInutilizacao', **kwargs)
+
 
 def xml_consultar_protocolo_nfe(certificado, **kwargs):
     return _render(certificado, 'NfeConsultaProtocolo', False, **kwargs)
