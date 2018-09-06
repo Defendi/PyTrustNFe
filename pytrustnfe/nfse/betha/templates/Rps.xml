@@ -23,13 +23,14 @@
 				<DescontoIncondicionado>{{ rps.desconto_incondicionado }}</DescontoIncondicionado>
 				<DescontoCondicionado>{{ rps.desconto_condicionado }}</DescontoCondicionado>	
 			</Valores>
-			<IssRetido>{{ rps.valor_iss_retido }}</IssRetido>
+			<IssRetido>{{ rps.iss_retido }}</IssRetido>
 			<ItemListaServico>{{ rps.codigo_servico }}</ItemListaServico>
 			<CodigoTributacaoMunicipio>{{ rps.codigo_tributacao_municipio }}</CodigoTributacaoMunicipio>
 			<Discriminacao>{{ rps.descricao }}</Discriminacao>
 			<CodigoMunicipio>{{ rps.codigo_municipio }}</CodigoMunicipio>
-           	<ExigibilidadeISS>{{ rps.exigibilidade_iss}}</ExigibilidadeISS>
-			<MunicipioIncidencia>{{ rps.exigibilidade_iss}}</MunicipioIncidencia>
+			<CodigoPais>{{ rps.codigo_pais }}</CodigoPais>
+           	<ExigibilidadeISS>{{ rps.exigibilidade_iss }}</ExigibilidadeISS>
+			<MunicipioIncidencia>{{ rps.codigo_municipio }}</MunicipioIncidencia>
 		</Servico>
 		<Prestador>
 			<CpfCnpj>
@@ -79,6 +80,7 @@
             <CodigoObra>{{ rps.construcao_civil.codigo_obra }}</CodigoObra>
             <Art>{{ rps.construcao_civil.art }}</Art>
 		</ConstrucaoCivil>
+        {% endif %}
         <RegimeEspecialTributacao>{{ rps.regime_tributacao }}</RegimeEspecialTributacao>
         <OptanteSimplesNacional>{{ rps.optante_simples }}</OptanteSimplesNacional>
 		<IncentivoFiscal>{{ rps.incentivador_cultural }}</IncentivoFiscal>
