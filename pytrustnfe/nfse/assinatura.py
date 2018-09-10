@@ -14,7 +14,7 @@ class Assinatura(object):
         self.arquivo = arquivo
         self.senha = senha
 
-    def assina_xml(self, xml_element, reference):
+    def assina_xml(self, xml_element, reference,key_name=None):
         cert, key = extract_cert_and_key_from_pfx(self.arquivo, self.senha)
 
         for element in xml_element.iter("*"):
@@ -33,7 +33,7 @@ class Assinatura(object):
         ref_uri = ('#%s' % reference) if reference else None
         signed_root = signer.sign(
             xml_element, key=key, cert=cert,
-            reference_uri=ref_uri)
+            reference_uri=ref_uri,key_name=key_name)
         if reference:
             element_signed = signed_root.find(".//*[@Id='%s']" % reference)
             signature = signed_root.find(

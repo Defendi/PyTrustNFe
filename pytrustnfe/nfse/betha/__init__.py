@@ -31,11 +31,19 @@ def _validate(method, xml):
 def _render(certificado, method, **kwargs):
     path = os.path.join(os.path.dirname(__file__), 'templates')
     xml_send = render_xml(path, '%s.xml' % method, True, **kwargs)
-    reference = ''
-    if method == 'RecepcionarLoteRps':
-        reference = 'rps%s' % kwargs['nfse']['lista_rps'][0]['numero']
+    if method in ('RecepcionarLoteRps','CancelarNfse'):
+        reference = ''
+        if method == 'RecepcionarLoteRps':
+            reference = 'rps%s' % kwargs['nfse']['lista_rps'][0]['numero']
         signer = Assinatura(certificado.pfx, certificado.password)
         xml_send = signer.assina_xml(xml_send, reference)
+        if method == 'CancelarNfse':
+            xml_send = etree.fromstring(xml_send)
+            Signature = xml_send.find(".//{http://www.w3.org/2000/09/xmldsig#}Signature")
+            Pedido = xml_send.find(".//{http://www.betha.com.br/e-nota-contribuinte-ws}Pedido")
+            if Signature:
+                Pedido.append(Signature)
+            xml_send = etree.tostring(xml_send)
     else:
         xml_send = etree.tostring(xml_send)
     return xml_send
@@ -84,4 +92,12 @@ def consultar_lote_rps(certificado, **kwargs):
     if "xml" not in kwargs:
         kwargs['xml'] = xml_consultar_lote_rps(certificado, **kwargs)
     return _send(certificado, 'ConsultarLoteRps', **kwargs)
+
+def xml_cancelar_nfse(certificado, **kwargs):
+    return _render(certificado, 'CancelarNfse', **kwargs)
+
+def cancelar_nfse(certificado, **kwargs):
+    if "xml" not in kwargs:
+        kwargs['xml'] = xml_cancelar_nfse(certificado, **kwargs)
+    return _send(certificado, 'CancelarNfse', **kwargs)
 
