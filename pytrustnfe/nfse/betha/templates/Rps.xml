@@ -24,6 +24,7 @@
 				<DescontoCondicionado>{{ rps.desconto_condicionado }}</DescontoCondicionado>	
 			</Valores>
 			<IssRetido>{{ rps.iss_retido }}</IssRetido>
+			<ResponsavelRetencao>{{ rps.resp_retencao }}</ResponsavelRetencao>
 			<ItemListaServico>{{ rps.codigo_servico }}</ItemListaServico>
 			<CodigoTributacaoMunicipio>{{ rps.codigo_tributacao_municipio }}</CodigoTributacaoMunicipio>
 			<Discriminacao>{{ rps.descricao }}</Discriminacao>
