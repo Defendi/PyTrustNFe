@@ -8,6 +8,7 @@ import hashlib
 import binascii
 from lxml import etree
 from collections import deque
+from urllib.parse import urlparse
 from .assinatura import Assinatura
 from pytrustnfe.xml import render_xml, sanitize_response
 from pytrustnfe.utils import gerar_chave, ChaveNFe
@@ -88,51 +89,78 @@ def _generate_nfe_id(**kwargs):
 
 def _add_qrCode(xml, **kwargs):
     xml = etree.fromstring(xml)
-    inf_nfe = kwargs['NFes'][0]['infNFe']
-    nfe = xml.find(".//{http://www.portalfiscal.inf.br/nfe}NFe")
     infnfesupl = etree.Element('infNFeSupl')
     qrcode = etree.Element('qrCode')
+    urlChave = etree.Element('urlChave')
+    qrcode_version = '2'
+    inf_nfe = kwargs['NFes'][0]['infNFe']
+    nfe = xml.find(".//{http://www.portalfiscal.inf.br/nfe}NFe")
+    csc = inf_nfe['codigo_seguranca']['csc']
     chave_nfe = inf_nfe['Id'][3:]
-    dh_emissao = binascii.hexlify(inf_nfe['ide']['dhEmi'].encode()).decode()
-    versao = '100'
     ambiente = kwargs['ambiente']
-    valor_total = inf_nfe['total']['vNF']
-    dest_cpf = 'Inexistente'
-    dest = nfe.find(".//{http://www.portalfiscal.inf.br/nfe}dest")
-
-    if inf_nfe.get('dest', False):
-        if inf_nfe['dest'].get('CPF', False):
-            dest_cpf = inf_nfe['dest']['CPF']
-            dest = etree.Element('dest')
-            cpf = etree.Element('CPF')
-            cpf.text = dest_cpf
-            dest.append(cpf)
-
-    icms_total = inf_nfe['total']['vICMS']
-    dig_val = binascii.hexlify(xml.find(
-        ".//{http://www.w3.org/2000/09/xmldsig#}DigestValue").text.encode()).decode()
-    cid_token = kwargs['NFes'][0]['infNFe']['codigo_seguranca']['cid_token']
-    csc = kwargs['NFes'][0]['infNFe']['codigo_seguranca']['csc']
-
-    c_hash_QR_code = "chNFe={0}&nVersao={1}&tpAmb={2}&cDest={3}&dhEmi={4}&vNF\
-={5}&vICMS={6}&digVal={7}&cIdToken={8}{9}".\
-        format(chave_nfe, versao, ambiente, dest_cpf, dh_emissao,
-               valor_total, icms_total, dig_val, cid_token, csc)
-    c_hash_QR_code = hashlib.sha1(c_hash_QR_code.encode()).hexdigest()
-
-    QR_code_url = "?chNFe={0}&nVersao={1}&tpAmb={2}&{3}dhEmi={4}&vNF={5}&vICMS\
-={6}&digVal={7}&cIdToken={8}&cHashQRCode={9}".\
-        format(chave_nfe, versao, ambiente,
-               'cDest={}&'.format(dest_cpf) if dest_cpf != 'Inexistente'
-               else '', dh_emissao, valor_total, icms_total, dig_val,
-               cid_token, c_hash_QR_code)
+    qr_code_url = False
+    if inf_nfe['ide']['tpEmis'] == 1:
+        qr_code_url = '{ch}|{vr}|{amb}|1'.format(
+            ch = chave_nfe, 
+            vr = qrcode_version,
+            amb = ambiente
+        )
+    qr_code_url_csc = qr_code_url + csc
+    qr_code_c_hash = hashlib.sha1(qr_code_url_csc.encode()).hexdigest().upper()
     qr_code_server = localizar_qrcode(kwargs['estado'], ambiente)
-    qrcode_text = qr_code_server + QR_code_url
-    qrcode.text = etree.CDATA(qrcode_text)
+    QR_code_url = "{server}?p={url}|{hash}".format(
+        server = qr_code_server,
+        url = qr_code_url,
+        hash = qr_code_c_hash
+    )
+    parsed_uri = urlparse(qr_code_server)
+    url_consulta_chave = '{uri.scheme}://{uri.netloc}/nfce/consulta'.format(uri=parsed_uri)
+    urlChave.text = url_consulta_chave
+    qrcode.text = QR_code_url
+    
     infnfesupl.append(qrcode)
+    infnfesupl.append(urlChave)
     nfe.insert(1, infnfesupl)
     return etree.tostring(xml, encoding=str)
-
+    
+#     dh_emissao = binascii.hexlify(inf_nfe['ide']['dhEmi'].encode()).decode()
+#     versao = '100'
+#     ambiente = kwargs['ambiente']
+#     valor_total = inf_nfe['total']['vNF']
+#     dest_cpf = 'Inexistente'
+#     dest = nfe.find(".//{http://www.portalfiscal.inf.br/nfe}dest")
+# 
+#     if inf_nfe.get('dest', False):
+#         if inf_nfe['dest'].get('CPF', False):
+#             dest_cpf = inf_nfe['dest']['CPF']
+#             dest = etree.Element('dest')
+#             cpf = etree.Element('CPF')
+#             cpf.text = dest_cpf
+#             dest.append(cpf)
+# 
+#     icms_total = inf_nfe['total']['vICMS']
+#     dig_val = binascii.hexlify(xml.find(
+#         ".//{http://www.w3.org/2000/09/xmldsig#}DigestValue").text.encode()).decode()
+#     cid_token = kwargs['NFes'][0]['infNFe']['codigo_seguranca']['cid_token']
+# 
+#     c_hash_QR_code = "chNFe={0}&nVersao={1}&tpAmb={2}&cDest={3}&dhEmi={4}&vNF\
+# ={5}&vICMS={6}&digVal={7}&cIdToken={8}{9}".\
+#         format(chave_nfe, versao, ambiente, dest_cpf, dh_emissao,
+#                valor_total, icms_total, dig_val, cid_token, csc)
+#     c_hash_QR_code = hashlib.sha1(c_hash_QR_code.encode()).hexdigest()
+# 
+#     QR_code_url = "?chNFe={0}&nVersao={1}&tpAmb={2}&{3}dhEmi={4}&vNF={5}&vICMS\
+# ={6}&digVal={7}&cIdToken={8}&cHashQRCode={9}".\
+#         format(chave_nfe, versao, ambiente,
+#                'cDest={}&'.format(dest_cpf) if dest_cpf != 'Inexistente'
+#                else '', dh_emissao, valor_total, icms_total, dig_val,
+#                cid_token, c_hash_QR_code)
+#     qr_code_server = localizar_qrcode(kwargs['estado'], ambiente)
+#     qrcode_text = qr_code_server + QR_code_url
+#     qrcode.text = etree.CDATA(qrcode_text)
+#     infnfesupl.append(qrcode)
+#     nfe.insert(1, infnfesupl)
+#     return etree.tostring(xml, encoding=str)
 
 def _render(certificado, method, sign, **kwargs):
     path = os.path.join(os.path.dirname(__file__), 'templates')

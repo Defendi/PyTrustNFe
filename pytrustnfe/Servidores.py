@@ -460,8 +460,8 @@ UFPR = {
             WS_NFE_SITUACAO: 'nfce/NFeStatusServico4?wsdl',
             WS_NFE_RECEPCAO_EVENTO: 'nfce/NFeRecepcaoEvento4?wsdl',
             WS_NFE_AUTORIZACAO: 'nfce/NFeAutorizacao4?wsdl',
-            WS_NFE_RET_AUTORIZACAO: 'nfce/NFeRetAutorizacao4?wsdl',  # noqa
-            WS_NFCE_QR_CODE: 'http://www.fazenda.pr.gov.br/nfce/qrcode?',
+            WS_NFE_RET_AUTORIZACAO: 'nfce/NFeRetAutorizacao4?wsdl',
+            WS_NFCE_QR_CODE: 'http://www.fazenda.pr.gov.br/nfce/qrcode',
         },
         AMBIENTE_HOMOLOGACAO: {
             'servidor': 'homologacao.nfce.sefa.pr.gov.br',
@@ -470,8 +470,8 @@ UFPR = {
             WS_NFE_SITUACAO: 'nfce/NFeStatusServico4?wsdl',
             WS_NFE_RECEPCAO_EVENTO: 'nfce/NFeRecepcaoEvento4?wsdl',
             WS_NFE_AUTORIZACAO: 'nfce/NFeAutorizacao4?wsdl',
-            WS_NFE_RET_AUTORIZACAO: 'nfce/NFeRetAutorizacao4?wsdl',  # noqa
-            WS_NFCE_QR_CODE: 'http://www.fazenda.pr.gov.br/nfce/qrcode?',
+            WS_NFE_RET_AUTORIZACAO: 'nfce/NFeRetAutorizacao4?wsdl',
+            WS_NFCE_QR_CODE: 'http://www.fazenda.pr.gov.br/nfce/qrcode',
         }
     }
 }
