@@ -207,7 +207,15 @@ def _send(certificado, method, **kwargs):
 
     xml = etree.fromstring(xml_send)
     history = MyLoggingPlugin()
-    client = Client(base_url, transport=transport, plugins=[history])
+    try:
+        client = Client(base_url, transport=transport, plugins=[history])
+    except Exception as e:
+        return {
+            'sent_xml': xml_send,
+            'sent_raw_xml': False,
+            'received_xml': str(e),
+            'object': None,
+        }
 
     port = next(iter(client.wsdl.port_types))
     first_operation = [x for x in iter(
