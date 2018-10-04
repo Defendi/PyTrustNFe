@@ -104,7 +104,7 @@ class danfce(object):
 
         if self.logo:
             img = get_image(self.logo, width=10 * mm)
-            img.drawOn(self.canvas, 5, 830)
+            img.drawOn(self.canvas, 5, 825)
 
         cEnd = tagtext(oNode=elem_emit, cTag="xNome") + '<br />'
         cEnd += "CNPJ: %s  " % (format_cnpj_cpf(
@@ -197,6 +197,7 @@ class danfce(object):
         valor_a_pagar = format_number(tagtext(oNode=el_total, cTag='vNF'),
                                       precision=2)
         el_pag = oXML.find(".//{http://www.portalfiscal.inf.br/nfe}pag")
+        el_detPag = el_pag.findall(".//{http://www.portalfiscal.inf.br/nfe}detPag")
         troco = format_number(tagtext(oNode=el_pag, cTag="vTroco"))
 
         payment_method_list = {'01': 'Dinheiro',
@@ -217,15 +218,15 @@ class danfce(object):
 
         payment_methods = []
 
-        for pagId, item in enumerate(el_pag):
-            if 'tPag' not in item.tag:
-                continue
-
+        for pagId, item in enumerate(el_detPag):
             payment = []
-            method = payment_method_list[item.text]
+            indPag = tagtext(oNode=item, cTag='indPag')
+            tPag = tagtext(oNode=item, cTag='tPag')
+            vPag = tagtext(oNode=item, cTag='vPag')
+            method = payment_method_list[tPag]
 
             payment.append(method)
-            payment.append(format_number(item.getnext().text, precision=2))
+            payment.append(format_number(vPag, precision=2))
             payment_methods.append(payment)
 
         values = {'quantidade_itens': quant_produtos,
