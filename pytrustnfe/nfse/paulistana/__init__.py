@@ -4,12 +4,13 @@
 
 import os
 import suds
+from lxml import etree
 from OpenSSL import crypto
 from base64 import b64encode
 from pytrustnfe.xml import render_xml, sanitize_response
 from pytrustnfe.client import get_authenticated_client
 from pytrustnfe.certificado import extract_cert_and_key_from_pfx, save_cert_key
-from pytrustnfe.nfse.assinatura import Assinatura
+from pytrustnfe.nfse.assinatura import Assinatura2
 
 
 def sign_tag(certificado, **kwargs):
@@ -23,6 +24,15 @@ def sign_tag(certificado, **kwargs):
         signed = crypto.sign(key, kwargs['cancelamento']['assinatura'], 'SHA1')
         kwargs['cancelamento']['assinatura'] = b64encode(signed)
 
+def _render(certificado, method, **kwargs):
+    path = os.path.join(os.path.dirname(__file__), 'templates')
+    if method == 'TesteEnvioLoteRPS' or method == 'EnvioLoteRPS'   or method == 'CancelamentoNFe':
+        sign_tag(certificado, **kwargs)
+
+    if method == 'TesteEnvioLoteRPS':
+        return  render_xml(path, 'EnvioLoteRPS.xml', False, **kwargs)
+    else:
+        return  render_xml(path, '%s.xml' % method, False, **kwargs)
 
 def _send(certificado, method, **kwargs):
     # A little hack to test
@@ -32,9 +42,9 @@ def _send(certificado, method, **kwargs):
         sign_tag(certificado, **kwargs)
 
     if method == 'TesteEnvioLoteRPS':
-        xml_send = render_xml(path, 'EnvioLoteRPS.xml', False, **kwargs)
+        xml_send = '<?xml version="1.0"?>'+render_xml(path, 'EnvioLoteRPS.xml', False, **kwargs)
     else:
-        xml_send = render_xml(path, '%s.xml' % method, False, **kwargs)
+        xml_send = '<?xml version="1.0"?>'+render_xml(path, '%s.xml' % method, False, **kwargs)
     base_url = 'https://nfe.prefeitura.sp.gov.br/ws/lotenfe.asmx?wsdl'
 
     cert, key = extract_cert_and_key_from_pfx(
@@ -43,12 +53,12 @@ def _send(certificado, method, **kwargs):
     client = get_authenticated_client(base_url, cert, key)
 
     pfx_path = certificado.save_pfx()
-    signer = Assinatura(pfx_path, certificado.password)
+    signer = Assinatura2(pfx_path, certificado.password)
     xml_send = signer.assina_xml(xml_send, '')
 
     try:
         response = getattr(client.service, method)(1, xml_send)
-    except suds.WebFault, e:
+    except suds.WebFault as e:
         return {
             'sent_xml': xml_send,
             'received_xml': e.fault.faultstring,
@@ -62,49 +72,45 @@ def _send(certificado, method, **kwargs):
         'object': obj
     }
 
+def xml_recepcionar_lote_rps(certificado, **kwargs):
+    if kwargs['nfse'].get('ambiente',2) == 1:
+        return _render(certificado, 'EnvioLoteRPS', **kwargs)
+    else:
+        return _render(certificado, 'TesteEnvioLoteRPS', **kwargs)
 
 def envio_rps(certificado, **kwargs):
     return _send(certificado, 'EnvioRPS', **kwargs)
-
 
 # Testado pois usa o mesmo xml que o teste_envio_lote_rps
 def envio_lote_rps(certificado, **kwargs):
     return _send(certificado, 'EnvioLoteRPS', **kwargs)
 
-
 # Testado
 def teste_envio_lote_rps(certificado, **kwargs):
     return _send(certificado, 'TesteEnvioLoteRPS', **kwargs)
 
-
 def cancelamento_nfe(certificado, **kwargs):
     return _send(certificado, 'CancelamentoNFe', **kwargs)
-
 
 # Testado
 def consulta_nfe(certificado, **kwargs):
     return _send(certificado, 'ConsultaNFe', **kwargs)
 
-
 # Testado
 def consulta_nfe_recebidas(certificado, **kwargs):
     return _send(certificado, 'ConsultaNFeRecebidas', **kwargs)
-
 
 # Testado
 def consulta_nfe_emitidas(certificado, **kwargs):
     return _send(certificado, 'ConsultaNFeEmitidas', **kwargs)
 
-
 # Testado
 def consulta_lote(certificado, **kwargs):
     return _send(certificado, 'ConsultaLote', **kwargs)
 
-
 # Testado
 def consulta_informacoes_lote(certificado, **kwargs):
     return _send(certificado, 'ConsultaInformacoesLote', **kwargs)
-
 
 # Testado
 def consulta_cnpj(certificado, **kwargs):
