@@ -2,6 +2,7 @@
 # © 2017 Johny Chen Jy, Trustcode
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
+import os
 import re
 from textwrap import wrap
 from io import BytesIO
@@ -15,7 +16,8 @@ from reportlab.graphics.shapes import Drawing
 from reportlab.platypus import Table, TableStyle, Paragraph, Image
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.styles import ParagraphStyle
-
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfbase import pdfmetrics
 
 def format_cnpj_cpf(value):
     if len(value) < 12:  # CPF
@@ -73,6 +75,15 @@ def format_telefone(telefone):
 class danfce(object):
 
     def __init__(self, list_xml, logo=None):
+
+        path = os.path.join(os.path.dirname(__file__), 'fonts')
+        pdfmetrics.registerFont(
+            TTFont('NimbusSanL-Regu',
+                   os.path.join(path, 'NimbusSanL Regular.ttf')))
+        pdfmetrics.registerFont(
+            TTFont('NimbusSanL-Bold',
+                   os.path.join(path, 'NimbusSanL Bold.ttf')))
+
 
         self.current_font_size = 7
         self.current_font_name = 'NimbusSanL-Regu'
