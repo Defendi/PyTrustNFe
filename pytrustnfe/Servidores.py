@@ -454,7 +454,7 @@ UFPR = {
     },
     NFCE_MODELO: {
         AMBIENTE_PRODUCAO: {
-            'servidor': 'nfce.svrs.rs.gov.br',
+            'servidor': 'nfce.sefa.pr.gov.br',
             WS_NFE_INUTILIZACAO: 'nfce/NFeInutilizacao4?wsdl',
             WS_NFE_CONSULTA: 'nfce/NFeConsultaProtocolo4?wsdl',
             WS_NFE_SITUACAO: 'nfce/NFeStatusServico4?wsdl',
