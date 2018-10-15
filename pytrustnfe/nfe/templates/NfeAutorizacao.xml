@@ -28,6 +28,8 @@
                 <indPres>{{ ide.indPres }}</indPres>
                 <procEmi>{{ ide.procEmi }}</procEmi>
                 <verProc>Odoo Brasil 10</verProc>
+                <dhCont>{{ ide.dhCont }}</dhCont>
+                <xJust>{{ ide.xJust }}</xJust>
                 {% if ide.NFref is defined -%}
                 {% for ref in ide.NFref %}
                 <NFref>
