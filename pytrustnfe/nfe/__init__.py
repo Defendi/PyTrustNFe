@@ -215,53 +215,76 @@ def xml_autorizar_nfe(certificado, **kwargs):
     _generate_nfe_id(**kwargs)
     return _render(certificado, 'NfeAutorizacao', True, **kwargs)
 
+
 def autorizar_nfe(certificado, **kwargs):  # Assinar
     if "xml" not in kwargs:
         kwargs['xml'] = xml_autorizar_nfe(certificado, **kwargs)
-    return _send(certificado, 'NfeAutorizacao', **kwargs)
+    if "err108" in kwargs:
+        xml = """<env:Envelope xmlns:env='http://www.w3.org/2003/05/soap-envelope'><env:Body xmlns:env='http://www.w3.org/2003/05/soap-envelope'><nfeResultMsg xmlns='http://www.portalfiscal.inf.br/nfe/wsdl/NFeAutorizacao4'><retEnviNFe versao='4.00' xmlns='http://www.portalfiscal.inf.br/nfe'><tpAmb>1</tpAmb><verAplic>PR-v4_1_9</verAplic><cStat>108</cStat><xMotivo>Servico Paralisado Momentaneamente (curto prazo)</xMotivo><cUF>41</cUF><dhRecbto>2018-10-13T11:19:00-03:00</dhRecbto></retEnviNFe></nfeResultMsg></env:Body></env:Envelope>"""       
+        response, obj = sanitize_response(xml)
+        return {
+            'sent_xml': kwargs['xml'],
+            'sent_raw_xml': False,
+            'received_xml': response,
+            'object': obj.Body.getchildren()[0]
+        }
+    else:
+        return _send(certificado, 'NfeAutorizacao', **kwargs)
+
 
 def xml_retorno_autorizar_nfe(certificado, **kwargs):
     return _render(certificado, 'NfeRetAutorizacao', False, **kwargs)
+
 
 def retorno_autorizar_nfe(certificado, **kwargs):
     if "xml" not in kwargs:
         kwargs['xml'] = xml_retorno_autorizar_nfe(certificado, **kwargs)
     return _send(certificado, 'NfeRetAutorizacao', **kwargs)
 
+
 def xml_recepcao_evento_cancelamento(certificado, **kwargs):  # Assinar
     return _render(certificado, 'RecepcaoEvento', True, **kwargs)
+
 
 def recepcao_evento_cancelamento(certificado, **kwargs):  # Assinar
     if "xml" not in kwargs:
         kwargs['xml'] = xml_recepcao_evento_cancelamento(certificado, **kwargs)
     return _send(certificado, 'RecepcaoEvento', **kwargs)
 
+
 def xml_inutilizar_nfe(certificado, **kwargs):
     return _render(certificado, 'NfeInutilizacao', True, **kwargs)
+
 
 def inutilizar_nfe(certificado, **kwargs):
     if "xml" not in kwargs:
         kwargs['xml'] = xml_inutilizar_nfe(certificado, **kwargs)
     return _send(certificado, 'NfeInutilizacao', **kwargs)
 
+
 def xml_consultar_protocolo_nfe(certificado, **kwargs):
     return _render(certificado, 'NfeConsultaProtocolo', False, **kwargs)
+
 
 def consultar_protocolo_nfe(certificado, **kwargs):
     if "xml" not in kwargs:
         kwargs['xml'] = xml_consultar_protocolo_nfe(certificado, **kwargs)
     return _send(certificado, 'NfeConsultaProtocolo', **kwargs)
 
+
 def xml_nfe_status_servico(certificado, **kwargs):
     return _render(certificado, 'NfeStatusServico', False, **kwargs)
+
 
 def nfe_status_servico(certificado, **kwargs):
     if "xml" not in kwargs:
         kwargs['xml'] = xml_nfe_status_servico(certificado, **kwargs)
     return _send(certificado, 'NfeStatusServico', **kwargs)
 
+
 def xml_consulta_cadastro(certificado, **kwargs):
     return _render(certificado, 'NfeConsultaCadastro', False, **kwargs)
+
 
 def consulta_cadastro(certificado, **kwargs):
     if "xml" not in kwargs:
@@ -269,8 +292,10 @@ def consulta_cadastro(certificado, **kwargs):
         kwargs['modelo'] = '55'
     return _send(certificado, 'NfeConsultaCadastro', **kwargs)
 
+
 def xml_recepcao_evento_carta_correcao(certificado, **kwargs):  # Assinar
     return _render(certificado, 'RecepcaoEvento', True, **kwargs)
+
 
 def recepcao_evento_carta_correcao(certificado, **kwargs):  # Assinar
     if "xml" not in kwargs:
@@ -278,16 +303,20 @@ def recepcao_evento_carta_correcao(certificado, **kwargs):  # Assinar
             certificado, **kwargs)
     return _send(certificado, 'RecepcaoEvento', **kwargs)
 
+
 def xml_recepcao_evento_manifesto(certificado, **kwargs):  # Assinar
     return _render(certificado, 'RecepcaoEvento', True, **kwargs)
+
 
 def recepcao_evento_manifesto(certificado, **kwargs):  # Assinar
     if "xml" not in kwargs:
         kwargs['xml'] = xml_recepcao_evento_manifesto(certificado, **kwargs)
     return _send(certificado, 'RecepcaoEvento', **kwargs)
 
+
 def xml_consulta_distribuicao_nfe(certificado, **kwargs):  # Assinar
     return _render(certificado, 'NFeDistribuicaoDFe', False, **kwargs)
+
 
 def consulta_distribuicao_nfe(certificado, **kwargs):
     if "xml" not in kwargs:
