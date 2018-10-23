@@ -74,7 +74,7 @@ def format_telefone(telefone):
 
 class danfce(object):
 
-    def __init__(self, list_xml, logo=None):
+    def __init__(self, list_xml, logo=None, timezone=None):
 
         path = os.path.join(os.path.dirname(__file__), 'fonts')
         pdfmetrics.registerFont(
@@ -199,14 +199,14 @@ class danfce(object):
         # Impostos
         el_total = oXML.find(".//{http://www.portalfiscal.inf.br/nfe}total")
 
-        total_tributo = format_number(tagtext(oNode=el_total, cTag='vTotTrib'),
-                                      precision=2)
-        valor_total = format_number(tagtext(oNode=el_total, cTag='vProd'),
-                                    precision=2)
-        desconto = format_number(tagtext(oNode=el_total, cTag='vDesc'),
-                                 precision=2)
-        valor_a_pagar = format_number(tagtext(oNode=el_total, cTag='vNF'),
-                                      precision=2)
+        total_tributo = format_number(
+            tagtext(oNode=el_total, cTag='vTotTrib'), precision=2)
+        valor_total = format_number(
+            tagtext(oNode=el_total, cTag='vProd'), precision=2)
+        desconto = format_number(
+            tagtext(oNode=el_total, cTag='vDesc'), precision=2)
+        valor_a_pagar = format_number(
+            tagtext(oNode=el_total, cTag='vNF'), precision=2)
         el_pag = oXML.find(".//{http://www.portalfiscal.inf.br/nfe}pag")
         el_detPag = el_pag.findall(".//{http://www.portalfiscal.inf.br/nfe}detPag")
         troco = format_number(tagtext(oNode=el_pag, cTag="vTroco"))
@@ -240,27 +240,29 @@ class danfce(object):
             payment.append(format_number(vPag, precision=2))
             payment_methods.append(payment)
 
-        values = {'quantidade_itens': quant_produtos,
-                  'total_tributo': total_tributo,
-                  'valor_total': valor_total,
-                  'desconto': desconto,
-                  'valor_a_pagar': valor_a_pagar,
-                  'formas_de_pagamento': payment_methods,
-                  'troco': troco,
-                  }
+        values = {
+            'quantidade_itens': quant_produtos,
+            'total_tributo': total_tributo,
+            'valor_total': valor_total,
+            'desconto': desconto,
+            'valor_a_pagar': valor_a_pagar,
+            'formas_de_pagamento': payment_methods,
+            'troco': troco,
+        }
 
         self.draw_totals_table(values)
 
         self.drawLine()
 
     def draw_totals_table(self, values):
-        rowHeights = [7, 7, 7, 7, 10]
-        data = [['QTD.TOTAL DE ITENS', values['quantidade_itens']],
+        rowHeights = [7, 7, 7, 7, 7]
+        data = [
+                ['QTD.TOTAL DE ITENS', values['quantidade_itens']],
                 ['VALOR TOTAL R$', values['valor_total']],
                 ['DESCONTO R$', values['desconto']],
                 ['VALOR A PAGAR R$', values['valor_a_pagar']],
                 ['FORMA DE PAGAMENTO', 'VALOR PAGO R$'],
-                ]
+               ]
 
         for item in values['formas_de_pagamento']:
             data.append([item[0], item[1]])

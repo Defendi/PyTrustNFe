@@ -86,7 +86,6 @@ def _generate_nfe_id(**kwargs):
         item['infNFe']['Id'] = chave_nfe
         item['infNFe']['ide']['cDV'] = chave_nfe[len(chave_nfe) - 1:]
 
-
 def _add_qrCode(xml, **kwargs):
     xml = etree.fromstring(xml)
     infnfesupl = etree.Element('infNFeSupl')
@@ -158,9 +157,6 @@ def _render(certificado, method, sign, **kwargs):
             xml_send = signer.assina_xml(
                 xmlElem_send, kwargs['manifesto']['identificador'])
 
-        if modelo == '65':
-            xml_send = _add_qrCode(xml_send, **kwargs)
-
     else:
         xml_send = etree.tostring(xmlElem_send, encoding=str)
     return xml_send
@@ -180,7 +176,8 @@ def _send(certificado, method, **kwargs):
     session.verify = False
     transport = Transport(session=session)
 
-    xml = etree.fromstring(xml_send)
+    parser = etree.XMLParser(strip_cdata=False)
+    xml = etree.fromstring(xml_send, parser=parser)
     history = MyLoggingPlugin()
     try:
         client = Client(base_url, transport=transport, plugins=[history])
@@ -318,9 +315,7 @@ def xml_consulta_distribuicao_nfe(certificado, **kwargs):  # Assinar
     return _render(certificado, 'NFeDistribuicaoDFe', False, **kwargs)
 
 
-def consulta_distribuicao_nfe(certificado, **kwargs):
-    if "xml" not in kwargs:
-        kwargs['xml'] = xml_consulta_distribuicao_nfe(certificado, **kwargs)
+def _send_v310(certificado, **kwargs):
     xml_send = kwargs["xml"]
     base_url = localizar_url(
         'NFeDistribuicaoDFe',  kwargs['estado'], kwargs['modelo'],
@@ -351,6 +346,12 @@ def consulta_distribuicao_nfe(certificado, **kwargs):
         }
 
 
+def consulta_distribuicao_nfe(certificado, **kwargs):
+    if "xml" not in kwargs:
+        kwargs['xml'] = xml_consulta_distribuicao_nfe(certificado, **kwargs)
+    return _send_v310(certificado, **kwargs)
+
+
 def xml_download_nfe(certificado, **kwargs):  # Assinar
     return _render(certificado, 'NFeDistribuicaoDFe', False, **kwargs)
 
@@ -358,4 +359,4 @@ def xml_download_nfe(certificado, **kwargs):  # Assinar
 def download_nfe(certificado, **kwargs):
     if "xml" not in kwargs:
         kwargs['xml'] = xml_download_nfe(certificado, **kwargs)
-    return _send(certificado, 'NFeDistribuicaoDFe', **kwargs)
+    return _send_v310(certificado, **kwargs)
