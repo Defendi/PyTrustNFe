@@ -1,0 +1,8 @@
+<ConsultarLoteRpsEnvio xmlns="http://www.betha.com.br/e-nota-contribuinte-ws">
+    <Prestador>
+        <CpfCnpj>
+            <Cnpj>{{ consulta.cnpj_prestador }}</Cnpj>
+        </CpfCnpj>
+    </Prestador>
+    <Protocolo>{{ consulta.protocolo }}</Protocolo>
+</ConsultarLoteRpsEnvio>
