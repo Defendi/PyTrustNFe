@@ -156,7 +156,8 @@ def _render(certificado, method, sign, **kwargs):
         elif method == 'RecepcaoEventoManifesto':
             xml_send = signer.assina_xml(
                 xmlElem_send, kwargs['manifesto']['identificador'])
-
+        if modelo == '65':
+            xml_send = _add_qrCode(xml_send, **kwargs)
     else:
         xml_send = etree.tostring(xmlElem_send, encoding=str)
     return xml_send
