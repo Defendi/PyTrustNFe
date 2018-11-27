@@ -118,7 +118,7 @@
                     {% endif %}
                 {% endif %}
                 <xNome>{{ dest.xNome|normalize|escape }}</xNome>
-                {% if NFe.infNFe.dest.enderDest is defined and NFe.infNFe.dest.enderDest %}
+                {% if dest.enderDest is defined %}
                 <enderDest>
                     <xLgr>{{ dest.enderDest.xLgr|normalize|escape }}</xLgr>
                     <nro>{{ dest.enderDest.nro }}</nro>
