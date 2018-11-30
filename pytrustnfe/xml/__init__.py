@@ -2,12 +2,15 @@
 # © 2016 Danimar Ribeiro, Trustcode
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
+import logging
+
 from lxml import etree
 
 from lxml import objectify
 from jinja2 import Environment, FileSystemLoader
 from . import filters
 
+_logger = logging.getLogger(__name__)
 
 def recursively_empty(e):
     if e.text:
@@ -28,6 +31,8 @@ def render_xml(path, template_name, remove_empty, **nfe):
 
     template = env.get_template(template_name)
     xml = template.render(**nfe).replace('\n', '')
+    xml = xml.replace('&', '&amp;')
+    _logger.info(xml)
     parser = etree.XMLParser(remove_blank_text=True, remove_comments=True,
                              strip_cdata=False)
     root = etree.fromstring(xml, parser=parser)
