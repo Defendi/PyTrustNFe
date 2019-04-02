@@ -44,10 +44,6 @@ def format_cnpj_cpf(value):
 
 
 def getdateByTimezone(cDateUTC, timezone=None):
-<<<<<<< HEAD
-=======
-
->>>>>>> adb967ad086e384d70a6c2f7abdf573c39267e0f
     '''
     Esse método trata a data recebida de acordo com o timezone do
     usuário. O seu retorno é dividido em duas partes:
@@ -121,7 +117,6 @@ class danfe(object):
     def __init__(self, sizepage=A4, list_xml=None, recibo=True,
                  orientation='portrait', logo=None, cce_xml=None,
                  timezone=None):
-<<<<<<< HEAD
 
         path = os.path.join(os.path.dirname(__file__), 'fonts')
         pdfmetrics.registerFont(
@@ -130,8 +125,6 @@ class danfe(object):
         pdfmetrics.registerFont(
             TTFont('NimbusSanL-Bold',
                    os.path.join(path, 'NimbusSanL Bold.ttf')))
-=======
->>>>>>> adb967ad086e384d70a6c2f7abdf573c39267e0f
         self.width = 210    # 21 x 29,7cm
         self.height = 297
         self.nLeft = 10
@@ -148,11 +141,7 @@ class danfe(object):
             '4': '4 - Transporte Próprio por conta do Destinatário',
             '9': '9 - Sem Ocorrência de Transporte'}
 
-<<<<<<< HEAD
-        self.oPDF_IO = BytesIO()
-=======
         self.oPDF_IO = IO()
->>>>>>> adb967ad086e384d70a6c2f7abdf573c39267e0f
         if orientation == 'landscape':
             raise NameError('Rotina não implementada')
         else:
@@ -169,14 +158,11 @@ class danfe(object):
             self.NrPages = 1
             self.Page = 1
 
-<<<<<<< HEAD
-=======
             # Calculando total linhas usadas para descrições dos itens
             # Com bloco fatura, apenas 25 linhas para itens na primeira folha
             nNr_Lin_Pg_1 = 30 if oXML_cobr is None else 26
             # [ rec_ini , rec_fim , lines , limit_lines ]
             oPaginator = [[0, 0, 0, nNr_Lin_Pg_1]]
->>>>>>> adb967ad086e384d70a6c2f7abdf573c39267e0f
             el_det = oXML.findall(".//{http://www.portalfiscal.inf.br/nfe}det")
 
             # Declaring variable to prevent future errors
@@ -227,17 +213,9 @@ class danfe(object):
             while index < nId:
                 self.newpage()
                 self.ide_emit(oXML=oXML, timezone=timezone)
-<<<<<<< HEAD
-                index = self.produtos(
-                    oXML=oXML, el_det=el_det, index=index,
-                    max_index=nId,
-                    list_desc=list_desc, nHeight=77,
-                    list_cod_prod=list_cod_prod)
-=======
                 self.produtos(oXML=oXML, el_det=el_det, oPaginator=oPag,
                               list_desc=list_desc, nHeight=77,
                               list_cod_prod=list_cod_prod)
->>>>>>> adb967ad086e384d70a6c2f7abdf573c39267e0f
 
             self.newpage()
         if cce_xml:
@@ -348,11 +326,7 @@ class danfe(object):
         P = Paragraph(tagtext(oNode=elem_emit, cTag='xNome'), styleN)
         w, h = P.wrap(55 * mm, 40 * mm)
         P.drawOn(self.canvas, (self.nLeft + 30) * mm,
-<<<<<<< HEAD
-                 (self.height - self.nlin - ((4.3 * h + 12) / 12)) * mm)
-=======
                  (self.height - self.nlin - ((5*h + 12)/12)) * mm)
->>>>>>> adb967ad086e384d70a6c2f7abdf573c39267e0f
 
         if self.logo:
             img = get_image(self.logo, width=2 * cm)
@@ -388,12 +362,8 @@ class danfe(object):
             self.canvas.restoreState()
 
         # Cancelado
-<<<<<<< HEAD
-        if tagtext(oNode=elem_evento, cTag='cStat') == '135':
-=======
         if tagtext(oNode=elem_evento, cTag='xEvento') == \
                 'Cancelamento registrado':
->>>>>>> adb967ad086e384d70a6c2f7abdf573c39267e0f
             self.canvas.saveState()
             self.canvas.rotate(45)
             self.canvas.setFont('NimbusSanL-Bold', 60)
@@ -873,18 +843,11 @@ obsCont[@xCampo='NomeVendedor']")
         self.canvas.setFont('NimbusSanL-Regu', 5)
         self.string(self.nLeft + 1, self.nlin + 4,
                     'INFORMAÇÕES COMPLEMENTARES')
-<<<<<<< HEAD
-        self.string(((self.width / 3) * 2) + 1, self.nlin + 4, 'RESERVADO AO FISCO')
-        self.rect(self.nLeft, self.nlin + 2,
-                  self.width - self.nLeft - self.nRight, 42 - tamanho_diminuir)
-        self.vline((self.width / 3) * 2, self.nlin + 2, 42 - tamanho_diminuir)
-=======
         self.string(
             ((self.width / 3)*2) + 1, self.nlin + 4, 'RESERVADO AO FISCO')
         self.rect(self.nLeft, self.nlin + 2,
                   self.width - self.nLeft - self.nRight, 42)
         self.vline((self.width / 3)*2, self.nlin + 2, 42)
->>>>>>> adb967ad086e384d70a6c2f7abdf573c39267e0f
         # Conteúdo campos
         styles = getSampleStyleSheet()
         styleN = styles['Normal']
