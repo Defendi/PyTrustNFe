@@ -587,6 +587,7 @@
                         <indIncentivo>{{ imposto.ISSQN.indIncentivo }}</indIncentivo>
                     </ISSQN>
                     {% endif %}
+                    {% endif %}
                     <PIS>
                         {% if imposto.PIS.CST in ('01', '02') %}
                         <PISAliq>
