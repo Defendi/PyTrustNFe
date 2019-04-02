@@ -11,11 +11,5 @@ dist/
 *egg*/
 docs/_build
 .vscode/tags
-<<<<<<< HEAD
-.cache
-.pytest_cache
-.vscode/
-=======
 .cache/
 .pytest_cache/
->>>>>>> adb967ad086e384d70a6c2f7abdf573c39267e0f
