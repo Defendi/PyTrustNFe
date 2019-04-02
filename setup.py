@@ -1,7 +1,9 @@
 # coding=utf-8
 from setuptools import setup, find_packages
 
-VERSION = "1.0.241"
+
+VERSION = "1.0.35d"
+
 
 setup(
     name="PyTrustNFe3",
@@ -10,7 +12,7 @@ setup(
     author_email='danimaribeiro@gmail.com',
     keywords=['nfe', 'mdf-e'],
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Plugins',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU Lesser General Public License v2 or \
@@ -47,12 +49,12 @@ later (LGPLv2+)',
         'Jinja2 >= 2.8',
         'pyOpenSSL >= 16.0.0, < 18',
         'signxml >= 2.4.0',
-        'lxml >= 3.5.0, < 4',
+        'lxml >= 3.5.0, < 5',
         'suds-jurko >= 0.6',
         'suds-jurko-requests >= 1.2',
         'reportlab',
         'pytz',
-        'zeep'
+        'zeep',
     ],
     tests_require=[
         'pytest',
