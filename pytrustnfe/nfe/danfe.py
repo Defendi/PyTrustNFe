@@ -24,9 +24,6 @@ from reportlab.pdfbase.ttfonts import TTFont
 import pytz
 from datetime import datetime, timedelta
 
-import pytz
-from datetime import datetime, timedelta
-
 
 def chunks(cString, nLen):
     for start in range(0, len(cString), nLen):
@@ -141,7 +138,7 @@ class danfe(object):
             '4': '4 - Transporte Próprio por conta do Destinatário',
             '9': '9 - Sem Ocorrência de Transporte'}
 
-        self.oPDF_IO = IO()
+        self.oPDF_IO = BytesIO()
         if orientation == 'landscape':
             raise NameError('Rotina não implementada')
         else:
@@ -158,11 +155,6 @@ class danfe(object):
             self.NrPages = 1
             self.Page = 1
 
-            # Calculando total linhas usadas para descrições dos itens
-            # Com bloco fatura, apenas 25 linhas para itens na primeira folha
-            nNr_Lin_Pg_1 = 30 if oXML_cobr is None else 26
-            # [ rec_ini , rec_fim , lines , limit_lines ]
-            oPaginator = [[0, 0, 0, nNr_Lin_Pg_1]]
             el_det = oXML.findall(".//{http://www.portalfiscal.inf.br/nfe}det")
 
             # Declaring variable to prevent future errors
@@ -211,11 +203,15 @@ class danfe(object):
 
             # Gera o restante das páginas do XML
             while index < nId:
+                if index < 0:
+                    index = index * -1
                 self.newpage()
                 self.ide_emit(oXML=oXML, timezone=timezone)
-                self.produtos(oXML=oXML, el_det=el_det, oPaginator=oPag,
-                              list_desc=list_desc, nHeight=77,
-                              list_cod_prod=list_cod_prod)
+                index = self.produtos(
+                    oXML=oXML, el_det=el_det, index=index,
+                    max_index=nId,
+                    list_desc=list_desc, nHeight=77,
+                    list_cod_prod=list_cod_prod)
 
             self.newpage()
         if cce_xml:
@@ -326,7 +322,7 @@ class danfe(object):
         P = Paragraph(tagtext(oNode=elem_emit, cTag='xNome'), styleN)
         w, h = P.wrap(55 * mm, 40 * mm)
         P.drawOn(self.canvas, (self.nLeft + 30) * mm,
-                 (self.height - self.nlin - ((5*h + 12)/12)) * mm)
+                 (self.height - self.nlin - ((4.3 * h + 12) / 12)) * mm)
 
         if self.logo:
             img = get_image(self.logo, width=2 * cm)
@@ -335,6 +331,7 @@ class danfe(object):
 
         cEnd = tagtext(oNode=elem_emit, cTag='xLgr') + ', ' + tagtext(
             oNode=elem_emit, cTag='nro') + ' - '
+        cEnd += tagtext(oNode=elem_emit, cTag='xCpl') + ' - '
         cEnd += tagtext(oNode=elem_emit, cTag='xBairro') + '<br />' + tagtext(
             oNode=elem_emit, cTag='xMun') + ' - '
         cEnd += 'Fone: ' + tagtext(oNode=elem_emit, cTag='fone') + '<br />'
@@ -362,8 +359,7 @@ class danfe(object):
             self.canvas.restoreState()
 
         # Cancelado
-        if tagtext(oNode=elem_evento, cTag='xEvento') == \
-                'Cancelamento registrado':
+        if tagtext(oNode=elem_evento, cTag='cStat') == '135':
             self.canvas.saveState()
             self.canvas.rotate(45)
             self.canvas.setFont('NimbusSanL-Bold', 60)
@@ -423,8 +419,9 @@ class danfe(object):
         cDt, cHr = getdateByTimezone(
             tagtext(oNode=elem_ide, cTag='dhSaiEnt'), timezone)
         self.string(nMr - 24, self.nlin + 14.3, cDt + ' ' + cHr)  # Dt saída
-        cEnd = tagtext(oNode=elem_dest, cTag='xLgr') + ', ' + tagtext(
-            oNode=elem_dest, cTag='nro')
+        cEnd = '%s, %s %s' % (tagtext(oNode=elem_dest, cTag='xLgr'),
+                              tagtext(oNode=elem_dest, cTag='nro'),
+                              tagtext(oNode=elem_dest, cTag='xCpl'))
         self.string(self.nLeft + 1, self.nlin + 14.3, cEnd)
         self.string(nMr - 98, self.nlin + 14.3,
                     tagtext(oNode=elem_dest, cTag='xBairro'))
@@ -730,6 +727,7 @@ obsCont[@xCampo='NomeVendedor']")
             line_height = max(len(list_cod_prod[id]), len(list_desc[id]))
             line_height *= nStep
             if nLin + line_height > maxHeight:
+                id = id * -1
                 break
 
             item = el_det[id]
@@ -843,11 +841,10 @@ obsCont[@xCampo='NomeVendedor']")
         self.canvas.setFont('NimbusSanL-Regu', 5)
         self.string(self.nLeft + 1, self.nlin + 4,
                     'INFORMAÇÕES COMPLEMENTARES')
-        self.string(
-            ((self.width / 3)*2) + 1, self.nlin + 4, 'RESERVADO AO FISCO')
+        self.string(((self.width / 3) * 2) + 1, self.nlin + 4, 'RESERVADO AO FISCO')
         self.rect(self.nLeft, self.nlin + 2,
-                  self.width - self.nLeft - self.nRight, 42)
-        self.vline((self.width / 3)*2, self.nlin + 2, 42)
+                  self.width - self.nLeft - self.nRight, 42 - tamanho_diminuir)
+        self.vline((self.width / 3) * 2, self.nlin + 2, 42 - tamanho_diminuir)
         # Conteúdo campos
         styles = getSampleStyleSheet()
         styleN = styles['Normal']
@@ -903,6 +900,7 @@ obsCont[@xCampo='NomeVendedor']")
         cEnd = tagtext(oNode=el_dest, cTag='xNome') + ' - '
         cEnd += tagtext(oNode=el_dest, cTag='xLgr') + ', ' + tagtext(
             oNode=el_dest, cTag='nro') + ', '
+        cEnd += tagtext(oNode=el_dest, cTag='xCpl') + ' '
         cEnd += tagtext(oNode=el_dest, cTag='xBairro') + ', ' + tagtext(
             oNode=el_dest, cTag='xMun') + ' - '
         cEnd += tagtext(oNode=el_dest, cTag='UF')
