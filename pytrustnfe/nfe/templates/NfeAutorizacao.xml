@@ -27,7 +27,7 @@
                 <indFinal>{{ ide.indFinal }}</indFinal>
                 <indPres>{{ ide.indPres }}</indPres>
                 <procEmi>{{ ide.procEmi }}</procEmi>
-                <verProc>Odoo Brasil 10</verProc>
+                <verProc>{{ ide.softEmi }}</verProc>
                 <dhCont>{{ ide.dhCont }}</dhCont>
                 <xJust>{{ ide.xJust }}</xJust>
                 {% if ide.NFref is defined -%}
