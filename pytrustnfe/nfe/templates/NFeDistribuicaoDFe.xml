@@ -5,6 +5,9 @@
     <distNSU>
         <ultNSU>{{ ultimo_nsu }}</ultNSU>
     </distNSU>
+    <consNSU>
+        <NSU>{{ numero_nsu }}</NSU>
+    </consNSU>
     <consChNFe>
         <chNFe>{{ chave_nfe }}</chNFe>
     </consChNFe>
