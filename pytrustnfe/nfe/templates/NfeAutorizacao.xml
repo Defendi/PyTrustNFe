@@ -145,6 +145,7 @@
             <retirada>
                 <CNPJ>{{ NFe.infNFe.retirada.CNPJ }}</CNPJ>
                 <CPF>{{ NFe.infNFe.retirada.CPF }}</CPF>
+                <xNome>{{ NFe.infNFe.retirada.xNome|normalize|escape }}</xNome>
                 <xLgr>{{ NFe.infNFe.retirada.xLgr|normalize|escape }}</xLgr>
                 <nro>{{ NFe.infNFe.retirada.nro }}</nro>
                 <xCpl>{{ NFe.infNFe.retirada.xCpl|normalize|escape }}</xCpl>
@@ -152,12 +153,19 @@
                 <cMun>{{ NFe.infNFe.retirada.cMun }}</cMun>
                 <xMun>{{ NFe.infNFe.retirada.xMun|normalize }}</xMun>
                 <UF>{{ NFe.infNFe.retirada.UF }}</UF>
+                <CEP>{{ NFe.infNFe.retirada.CEP }}</CEP>
+                <cPais>{{ NFe.infNFe.retirada.cPais }}</cPais>
+                <xPais>{{ NFe.infNFe.retirada.xPais|normalize|escape }}</xPais>
+                <fone>{{ NFe.infNFe.retirada.fone }}</fone>
+                <email>{{ NFe.infNFe.retirada.email }}</email>
+                <IE>{{ NFe.infNFe.retirada.IE }}</IE>                
             </retirada>
             {% endif %}
             {% if NFe.infNFe.entrega is defined %}
             <entrega>
                 <CNPJ>{{ NFe.infNFe.entrega.CNPJ }}</CNPJ>
                 <CPF>{{ NFe.infNFe.entrega.CPF }}</CPF>
+                <xNome>{{ NFe.infNFe.entrega.xNome|normalize|escape }}</xNome>
                 <xLgr>{{ NFe.infNFe.entrega.xLgr|normalize|escape }}</xLgr>
                 <nro>{{ NFe.infNFe.entrega.nro }}</nro>
                 <xCpl>{{ NFe.infNFe.entrega.xCpl|normalize|escape }}</xCpl>
@@ -165,6 +173,12 @@
                 <cMun>{{ NFe.infNFe.entrega.cMun }}</cMun>
                 <xMun>{{ NFe.infNFe.entrega.xMun }}</xMun>
                 <UF>{{ NFe.infNFe.entrega.UF }}</UF>
+                <CEP>{{ NFe.infNFe.entrega.CEP }}</CEP>
+                <cPais>{{ NFe.infNFe.entrega.cPais }}</cPais>
+                <xPais>{{ NFe.infNFe.entrega.xPais|normalize|escape }}</xPais>
+                <fone>{{ NFe.infNFe.entrega.fone }}</fone>
+                <email>{{ NFe.infNFe.entrega.email }}</email>
+                <IE>{{ NFe.infNFe.entrega.IE }}</IE>
             </entrega>
             {% endif %}
             {% if NFe.infNFe.autXML %}
@@ -262,6 +276,7 @@
                     {% for med in prod.med %}
                     <med>
                         <cProdANVISA>{{ med.cProdANVISA }}</cProdANVISA>
+                        <xMotivoIsencao>{{ med.xMotivoIsencao }}</xMotivoIsencao>
                         <vPMC>{{ med.vPMC }}</vPMC>
                     </med>
                     {% endfor %}
@@ -509,7 +524,6 @@
                             <vICMSSubstituto>{{ imposto.ICMS.vICMSSubstituto }}</vICMSSubstituto>
                             <vICMSSTRet>{{ imposto.ICMS.vICMSSTRet }}</vICMSSTRet>
                             <vBCFCPSTRet>{{ imposto.ICMS.vBCFCPSTRet }}</vBCFCPSTRet>
-                            <pFCPSTRet>{{ imposto.ICMS.pFCPSTRet }}</pFCPSTRet>
                             <pFCPSTRet>{{ imposto.ICMS.pFCPSTRet }}</pFCPSTRet>
                         </ICMSSN500>
                         {% endif %}
