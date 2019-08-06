@@ -157,6 +157,7 @@ class danfce(object):
             el_prod = item.find(".//{http://www.portalfiscal.inf.br/nfe}prod")
 
             cod = tagtext(oNode=el_prod, cTag='cProd')
+            cod = cod[:6] if len(cod) > 6 else cod
             descricao = tagtext(oNode=el_prod, cTag='xProd')
             descricao = (descricao[:20] + '..') if len(descricao) > 20 else descricao
             Un = tagtext(oNode=el_prod, cTag='uCom')
