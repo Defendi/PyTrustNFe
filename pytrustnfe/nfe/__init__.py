@@ -153,16 +153,15 @@ def _render(certificado, method, sign, **kwargs):
         if method == 'NfeInutilizacao':
             xml_send = signer.assina_xml(xmlElem_send, kwargs['obj']['id'])
         if method == 'NfeAutorizacao':
-            xml_send = signer.assina_xml(
-                xmlElem_send, kwargs['NFes'][0]['infNFe']['Id'])
+            xml_send = signer.assina_xml(xmlElem_send, kwargs['NFes'][0]['infNFe']['Id'])
+            if modelo == '65':
+                xml_send = _add_qrCode(xml_send, **kwargs)
         elif method == 'RecepcaoEvento':
             xml_send = signer.assina_xml(
                 xmlElem_send, kwargs['eventos'][0]['Id'])
         elif method == 'RecepcaoEventoManifesto':
             xml_send = signer.assina_xml(
                 xmlElem_send, kwargs['manifesto']['identificador'])
-        if modelo == '65':
-            xml_send = _add_qrCode(xml_send, **kwargs)
     else:
         xml_send = etree.tostring(xmlElem_send, encoding=str)
     return xml_send

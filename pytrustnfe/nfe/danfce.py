@@ -133,16 +133,24 @@ class danfce(object):
         self._drawCenteredParagraph(cEnd)
         self.drawLine()
 
-    def danfce_information(self):
-        self.drawTitle(
-            "DANFE NFC-e - Documento Auxiliar da Nota Fiscal de",
-            7, 'NimbusSanL-Bold')
+    def danfce_information(self, oXML=None):
+        el_ide = oXML.find(".//{http://www.portalfiscal.inf.br/nfe}ide")
+        tipo_emissao = tagtext(oNode=el_ide, cTag='tpEmis')
+        if tipo_emissao in ('5', '9'):
+            self.current_height -= 5
+            self.drawTitle("EMITIDA EM CONTINGÊNCIA",9, 'NimbusSanL-Bold')
+            self.drawTitle("Pendente de autorização", 7, 'NimbusSanL-Bold')
+            self.drawLine()
+        else:
+            self.drawTitle(
+                "DANFE NFC-e - Documento Auxiliar da Nota Fiscal de",
+                7, 'NimbusSanL-Bold')
 
-        self.drawTitle("Consumidor Eletrônica", 7, 'NimbusSanL-Bold')
+            self.drawTitle("Consumidor Eletrônica", 7, 'NimbusSanL-Bold')
 
-        self.drawString(
-            "NFC-e não permite aproveitamento de crédito de ICMS", True)
-        self.drawLine()
+            self.drawString(
+                "NFC-e não permite aproveitamento de crédito de ICMS", True)
+            self.drawLine()
 
     def produtos(self, oXML=None, el_det=None, oPaginator=None,
                  list_desc=None, list_cod_prod=None):
@@ -442,7 +450,7 @@ Protocolo de autorização: %s<br />Data de autorização %s<br />\
 
             self.ide_emit(oXML=oXML)
             # self.destinatario(oXML=oXML)
-            self.danfce_information()
+            self.danfce_information(oXML=oXML)
 
             self.produtos(oXML=oXML, el_det=el_det, oPaginator=oPaginator[0],
                           list_desc=list_desc, list_cod_prod=list_cod_prod)
