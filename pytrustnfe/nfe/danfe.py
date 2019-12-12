@@ -106,7 +106,8 @@ def get_image(path, width=1 * cm):
     img = utils.ImageReader(path)
     iw, ih = img.getSize()
     aspect = ih / float(iw)
-    return Image(path, width=width, height=(width * aspect))
+    nh = (width * aspect)
+    return Image(path, width=width, height=nh), nh
 
 
 class danfe(object):
@@ -314,20 +315,29 @@ class danfe(object):
 
         styles = getSampleStyleSheet()
         styleN = styles['Normal']
-        styleN.fontSize = 10
+        styleN.fontSize = 8
+        styleN.leading = 9
         styleN.fontName = 'NimbusSanL-Bold'
         styleN.alignment = TA_CENTER
 
+        # Logo
+        if self.logo:
+            img, nheight = get_image(self.logo, width=20 * mm)
+            ih = (85 / 2) - ((nheight / mm) / 2)
+            img.drawOn(self.canvas, (self.nLeft + ih) * mm,
+                       (self.height - self.nlin - 14) * mm)
+
         # Razão Social emitente
         P = Paragraph(tagtext(oNode=elem_emit, cTag='xNome'), styleN)
-        w, h = P.wrap(55 * mm, 40 * mm)
-        P.drawOn(self.canvas, (self.nLeft + 30) * mm,
-                 (self.height - self.nlin - ((4.3 * h + 12) / 12)) * mm)
-
-        if self.logo:
-            img = get_image(self.logo, width=2 * cm)
-            img.drawOn(self.canvas, (self.nLeft + 5) * mm,
-                       (self.height - self.nlin - 22) * mm)
+        tw, th = P.wrapOn(self.canvas, 85 * mm, 30 * mm)
+        # USICLEVER SOLUCOES E MANUFATURA PARA INDUSTRIA - EIRELI
+        if (th /mm) < 4.0:
+            iX = 15
+        else:
+            iX = 13
+        w, h = P.wrap(85 * mm, 30 * mm)
+        P.drawOn(self.canvas, (self.nLeft) * mm,
+                 (self.height - self.nlin - iX - ((4.3 * h + 12) / 12)) * mm)
 
         cEnd = tagtext(oNode=elem_emit, cTag='xLgr') + ', ' + tagtext(
             oNode=elem_emit, cTag='nro') + ' - '
@@ -342,12 +352,12 @@ class danfe(object):
         cEnd += '<br />Regime Tributário: %s' % (REGIME_TRIBUTACAO[regime])
 
         styleN.fontName = 'NimbusSanL-Regu'
-        styleN.fontSize = 7
-        styleN.leading = 10
+        styleN.fontSize = 6
+        styleN.leading = 8
         P = Paragraph(cEnd, styleN)
-        w, h = P.wrap(55 * mm, 30 * mm)
-        P.drawOn(self.canvas, (self.nLeft + 30) * mm,
-                 (self.height - self.nlin - 33) * mm)
+        w, h = P.wrap(85 * mm, 30 * mm)
+        P.drawOn(self.canvas, (self.nLeft) * mm,
+                 (self.height - self.nlin - 32) * mm)
 
         # Homologação
         if tagtext(oNode=elem_ide, cTag='tpAmb') == '2':
