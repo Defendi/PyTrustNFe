@@ -7,6 +7,7 @@ import os
 from io import BytesIO
 from textwrap import wrap
 import math
+from xml.sax.saxutils import unescape
 
 from reportlab.lib import utils
 from reportlab.pdfgen import canvas
@@ -89,7 +90,7 @@ def format_number(cNumber):
 def tagtext(oNode=None, cTag=None):
     try:
         xpath = ".//{http://www.portalfiscal.inf.br/nfe}%s" % (cTag)
-        cText = oNode.find(xpath).text
+        cText = unescape(oNode.find(xpath).text)
     except:
         cText = ''
     return cText
@@ -102,12 +103,19 @@ REGIME_TRIBUTACAO = {
 }
 
 
-def get_image(path, width=1 * cm):
+def get_image(path, width=False, height=False):
     img = utils.ImageReader(path)
     iw, ih = img.getSize()
-    aspect = ih / float(iw)
-    nh = (width * aspect)
-    return Image(path, width=width, height=nh), nh
+    if not height and not width:
+        width = iw
+        height = ih
+    elif height and not width:
+        aspect = iw / float(ih)
+        width = (height * aspect)
+    elif not height and width:
+        aspect = ih / float(iw)
+        height = (width * aspect)
+    return Image(path, width=width, height=height), width, height
 
 
 class danfe(object):
@@ -322,19 +330,20 @@ class danfe(object):
 
         # Logo
         if self.logo:
-            img, nheight = get_image(self.logo, width=20 * mm)
-            ih = (85 / 2) - ((nheight / mm) / 2)
-            img.drawOn(self.canvas, (self.nLeft + ih) * mm,
-                       (self.height - self.nlin - 14) * mm)
+            img, nwidth, nheight = get_image(self.logo, height=12 * mm)
+            ih = (85 * mm / 2) - (nwidth / 2)
+            img.drawOn(self.canvas, (self.nLeft * mm) + ih,
+                       ((self.height - self.nlin - 2) * mm) - nheight)
 
         # Razão Social emitente
         P = Paragraph(tagtext(oNode=elem_emit, cTag='xNome'), styleN)
         tw, th = P.wrapOn(self.canvas, 85 * mm, 30 * mm)
-        # USICLEVER SOLUCOES E MANUFATURA PARA INDUSTRIA - EIRELI
+
         if (th /mm) < 4.0:
             iX = 15
         else:
             iX = 13
+
         w, h = P.wrap(85 * mm, 30 * mm)
         P.drawOn(self.canvas, (self.nLeft) * mm,
                  (self.height - self.nlin - iX - ((4.3 * h + 12) / 12)) * mm)
