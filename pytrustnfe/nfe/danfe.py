@@ -318,6 +318,9 @@ class danfe(object):
                     tagtext(oNode=elem_ide, cTag='natOp'))
         self.string(self.nLeft + 1, self.nlin + 46,
                     tagtext(oNode=elem_emit, cTag='IE'))
+        if tagtext(oNode=elem_emit, cTag='IEST'):
+            self.string(self.nLeft + 62, self.nlin + 46,
+                        tagtext(oNode=elem_emit, cTag='IEST'))
         self.string(self.nLeft + 101, self.nlin + 46,
                     format_cnpj_cpf(tagtext(oNode=elem_emit, cTag='CNPJ')))
 
