@@ -75,20 +75,23 @@ class MyLoggingPlugin(Plugin):
 
 def _generate_nfe_id(**kwargs):
     for item in kwargs['NFes']:
-        vals = {
-            'cnpj': item['infNFe']['emit']['cnpj_cpf'],
-            'estado': item['infNFe']['ide']['cUF'],
-            'emissao': '%s%s' % (item['infNFe']['ide']['dhEmi'][2:4],
-                                 item['infNFe']['ide']['dhEmi'][5:7]),
-            'modelo': item['infNFe']['ide']['mod'],
-            'serie': item['infNFe']['ide']['serie'],
-            'numero': item['infNFe']['ide']['nNF'],
-            'tipo': item['infNFe']['ide']['tpEmis'],
-            'codigo': item['infNFe']['ide']['cNF'],
-        }
-        chave_nfe = ChaveNFe(**vals)
-        chave_nfe = gerar_chave(chave_nfe, 'NFe')
-        item['infNFe']['Id'] = chave_nfe
+        if not bool(item['infNFe'].get('Id',False)):
+            vals = {
+                'cnpj': item['infNFe']['emit']['cnpj_cpf'],
+                'estado': item['infNFe']['ide']['cUF'],
+                'emissao': '%s%s' % (item['infNFe']['ide']['dhEmi'][2:4],
+                                     item['infNFe']['ide']['dhEmi'][5:7]),
+                'modelo': item['infNFe']['ide']['mod'],
+                'serie': item['infNFe']['ide']['serie'],
+                'numero': item['infNFe']['ide']['nNF'],
+                'tipo': item['infNFe']['ide']['tpEmis'],
+                'codigo': item['infNFe']['ide']['cNF'],
+            }
+            chave_nfe = ChaveNFe(**vals)
+            chave_nfe = gerar_chave(chave_nfe, 'NFe')
+            item['infNFe']['Id'] = chave_nfe
+        else:
+            chave_nfe = item['infNFe']['Id']
         item['infNFe']['ide']['cDV'] = chave_nfe[len(chave_nfe) - 1:]
 
 def _add_qrCode(xml, **kwargs):
