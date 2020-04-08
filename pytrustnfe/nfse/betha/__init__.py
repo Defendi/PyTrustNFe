@@ -2,115 +2,110 @@
 # © 2016 Danimar Ribeiro, Trustcode
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-import logging
 import os
-import re
-from lxml import etree
-
 import suds
-from suds.sax.text import Raw
 from OpenSSL import crypto
 from base64 import b64encode
 from pytrustnfe.xml import render_xml, sanitize_response
 from pytrustnfe.client import get_authenticated_client
 from pytrustnfe.certificado import extract_cert_and_key_from_pfx, save_cert_key
-from pytrustnfe.nfe.assinatura import Assinatura
+from pytrustnfe.nfse.assinatura import Assinatura
 
-logging.getLogger('suds.client').setLevel(logging.DEBUG)
-logging.getLogger('suds.transport').setLevel(logging.DEBUG)
-logging.getLogger('suds.xsd.schema').setLevel(logging.DEBUG)
-logging.getLogger('suds.wsdl').setLevel(logging.DEBUG)
 
-_logger = logging.getLogger(__name__)
+def sign_tag(certificado, **kwargs):
+    pkcs12 = crypto.load_pkcs12(certificado.pfx, certificado.password)
+    key = pkcs12.get_privatekey()
+    if "nfse" in kwargs:
+        for item in kwargs["nfse"]["lista_rps"]:
+            signed = crypto.sign(key, item["assinatura"], "SHA1")
+            item["assinatura"] = b64encode(signed)
+    if "cancelamento" in kwargs:
+        signed = crypto.sign(key, kwargs["cancelamento"]["assinatura"], "SHA1")
+        kwargs["cancelamento"]["assinatura"] = b64encode(signed)
 
-def _validate(method, xml):
-    path = os.path.join(os.path.dirname(__file__), 'templates')
-    schema = os.path.join(path, '%s.xsd' % method)
-
-    nfe = etree.fromstring(xml)
-    esquema = etree.XMLSchema(etree.parse(schema))
-    esquema.validate(nfe)
-    erros = [x.message for x in esquema.error_log]
-    return erros
-
-def _render(certificado, method, **kwargs):
-    path = os.path.join(os.path.dirname(__file__), 'templates')
-    xml_send = render_xml(path, '%s.xml' % method, True, **kwargs)
-    if method in ('RecepcionarLoteRps','CancelarNfse'):
-        reference = ''
-        if method == 'RecepcionarLoteRps':
-            reference = 'rps%s' % kwargs['nfse']['lista_rps'][0]['numero']
-        signer = Assinatura(certificado.pfx, certificado.password)
-        xml_send = signer.assina_xml(xml_send, reference)
-        if method == 'CancelarNfse':
-            xml_send = etree.fromstring(xml_send)
-            Signature = xml_send.find(".//{http://www.w3.org/2000/09/xmldsig#}Signature")
-            Pedido = xml_send.find(".//{http://www.betha.com.br/e-nota-contribuinte-ws}Pedido")
-            if Signature:
-                Pedido.append(Signature)
-            xml_send = etree.tostring(xml_send)
-    else:
-        xml_send = etree.tostring(xml_send)
-    return xml_send
 
 def _send(certificado, method, **kwargs):
-    base_url = ''
-    if kwargs['ambiente'] == 'producao':
-        base_url = 'http://e-gov.betha.com.br/e-nota-contribuinte-ws/nfseWS?wsdl'
+    path = os.path.join(os.path.dirname(__file__), "templates")
+    if method in (
+        "GerarNfse",
+        "RecepcionarLoteRps",
+        "RecepcionarLoteRpsSincrono",
+        "CancelarNfse",
+        "SubstituirNfse",
+    ):
+        sign_tag(certificado, **kwargs)
+
+    if kwargs["ambiente"] == "producao":
+        url = "http://e-gov.betha.com.br/e-nota-contribuinte-test-ws/nfseWS?wsdl"
     else:
-        base_url = 'http://e-gov.betha.com.br/e-nota-contribuinte-test-ws/nfseWS?wsdl'
+        url = "http://e-gov.betha.com.br/e-nota-contribuinte-ws/nfseWS?wsdl"
 
-    cert, key = extract_cert_and_key_from_pfx(
-        certificado.pfx, certificado.password)
+    xml_send = render_xml(path, "%s.xml" % method, False, **kwargs)
+
+    cert, key = extract_cert_and_key_from_pfx(certificado.pfx, certificado.password)
     cert, key = save_cert_key(cert, key)
-    client = get_authenticated_client(base_url, cert, key)
-#     _logger.info(str(client))
-#     msgRecepcionarLoteRps = client.factory.create('RecepcionarLoteRps')
-#     _logger.info(str(msgRecepcionarLoteRps))
-# 
-# 
-#     try:
-#         msgRecepcionarLoteRps.nfseCabecMsg = Raw('<![CDATA[<cabecalho xmlns="http://www.betha.com.br/e-nota-contribuinte-ws" versao="2.02"><versaoDados>2.02</versaoDados></cabecalho>]]>')
-#         msgRecepcionarLoteRps.nfseDadosMsg = Raw('<![CDATA['+kwargs['xml'].decode("utf-8")+']]>') 
-#         response = getattr(client.service, method)(msgRecepcionarLoteRps)
-    try:
-        xml_send = Raw('<![CDATA['+kwargs['xml'].decode("utf-8")+']]>')
-        header = Raw('<![CDATA[<cabecalho xmlns="http://www.betha.com.br/e-nota-contribuinte-ws" versao="2.02"><versaoDados>2.02</versaoDados></cabecalho>]]>') #noqa
-        response = getattr(client.service, method)(header, xml_send)
+    client = get_authenticated_client(url, cert, key)
 
+    pfx_path = certificado.save_pfx()
+    signer = Assinatura(pfx_path, certificado.password)
+    xml_send = signer.assina_xml(xml_send, "")
+
+    try:
+        response = getattr(client.service, method)(1, xml_send)
     except suds.WebFault as e:
         return {
-            'sent_xml': kwargs['xml'],
-            'received_xml': e.fault.faultstring,
-            'object': None
+            "sent_xml": xml_send,
+            "received_xml": e.fault.faultstring,
+            "object": None,
         }
+
     response, obj = sanitize_response(response)
-    return {
-        'sent_xml': kwargs['xml'],
-        'received_xml': response,
-        'object': obj
-    }
+    return {"sent_xml": xml_send, "received_xml": response, "object": obj}
 
-def xml_recepcionar_lote_rps(certificado, **kwargs):
-    return _render(certificado, 'RecepcionarLoteRps', **kwargs)
 
-def recepcionar_lote_rps(certificado, **kwargs):
-    if "xml" not in kwargs:
-        kwargs['xml'] = xml_recepcionar_lote_rps(certificado, **kwargs)
-    return _send(certificado, 'RecepcionarLoteRps', **kwargs)
+def gerar_nfse(certificado, **kwargs):
+    return _send(certificado, "GerarNfse", **kwargs)
 
-def xml_consultar_lote_rps(certificado, **kwargs):
-    return _render(certificado, 'ConsultarLoteRps', **kwargs)
 
-def consultar_lote_rps(certificado, **kwargs):
-    if "xml" not in kwargs:
-        kwargs['xml'] = xml_consultar_lote_rps(certificado, **kwargs)
-    return _send(certificado, 'ConsultarLoteRps', **kwargs)
+def envio_lote_rps_assincrono(certificado, **kwargs):
+    return _send(certificado, "RecepcionarLoteRps", **kwargs)
 
-def xml_cancelar_nfse(certificado, **kwargs):
-    return _render(certificado, 'CancelarNfse', **kwargs)
+
+def envio_lote_rps(certificado, **kwargs):
+    return _send(certificado, "RecepcionarLoteRpsSincrono", **kwargs)
+
 
 def cancelar_nfse(certificado, **kwargs):
-    if "xml" not in kwargs:
-        kwargs['xml'] = xml_cancelar_nfse(certificado, **kwargs)
-    return _send(certificado, 'CancelarNfse', **kwargs)
+    return _send(certificado, "CancelarNfse", **kwargs)
+
+
+def substituir_nfse(certificado, **kwargs):
+    return _send(certificado, "SubstituirNfse", **kwargs)
+
+
+def consulta_situacao_lote_rps(certificado, **kwargs):
+    return _send(certificado, "ConsultaSituacaoLoteRPS", **kwargs)
+
+
+def consulta_nfse_por_rps(certificado, **kwargs):
+    return _send(certificado, "ConsultaNfsePorRps", **kwargs)
+
+
+def consultar_lote_rps(certificado, **kwargs):
+    return _send(certificado, "ConsultarLoteRps", **kwargs)
+
+
+def consulta_nfse_servico_prestado(certificado, **kwargs):
+    return _send(certificado, "ConsultarNfseServicoPrestado", **kwargs)
+
+
+def consultar_nfse_servico_tomado(certificado, **kwargs):
+    return _send(certificado, "ConsultarNfseServicoTomado", **kwargs)
+
+
+def consulta_nfse_faixe(certificado, **kwargs):
+    return _send(certificado, "ConsultarNfseFaixa", **kwargs)
+
+
+def consulta_cnpj(certificado, **kwargs):
+    return _send(certificado, "ConsultaCNPJ", **kwargs)
