@@ -28,6 +28,7 @@ later (LGPLv2+)',
     package_data={'pytrustnfe': [
         'nfe/templates/*xml',
         'nfe/fonts/*ttf',
+        'nfse/curitibana/templates/*xml',
         'nfse/paulistana/templates/*xml',
         'nfse/dsf/templates/*xml',
         'nfse/ginfes/templates/*xml',
