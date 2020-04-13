@@ -1,3 +1,0 @@
-<GerarNfseEnvio xmlns = "http://">
-    {% include 'Rps.xml' %}
-</GerarNfseEnvio>

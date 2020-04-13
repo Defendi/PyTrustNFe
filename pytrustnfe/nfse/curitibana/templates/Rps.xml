@@ -1,5 +1,5 @@
 <Rps>
-    <InfRps Id="{{ rps.numero }}">
+    <InfRps>
         <IdentificacaoRps>
             <Numero>{{ rps.numero }}</Numero>
             <Serie>{{ rps.serie }}</Serie>

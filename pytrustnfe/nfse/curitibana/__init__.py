@@ -14,9 +14,7 @@ def _render(certificado, method, **kwargs):
     xml_send = render_xml(path, "%s.xml" % method, True, **kwargs)
 
     reference = ""
-    if method == "GerarNfse":
-        reference = "%s" % kwargs["rps"]["numero"]
-    elif method == "CancelarNfse":
+    if method == "CancelarNfse":
         reference = "Cancelamento_NF%s" % kwargs["cancelamento"]["numero_nfse"]
 
     signer = Assinatura(certificado.pfx, certificado.password)
@@ -28,14 +26,14 @@ def _send(certificado, method, **kwargs):
     if kwargs["ambiente"] == "producao":
         base_url = "https://isscuritiba.curitiba.pr.gov.br/Iss.NfseWebService/nfsews.asmx?wsdl"
     else:
-        base_url = "https://pilotoisscuritiba.curitiba.pr.gov.br/nfse_ws/nfsews.asmx"  # noqa
+        base_url = "https://piloto-iss.curitiba.pr.gov.br/nfse_ws/nfsews.asmx?wsdl"  # noqa
 
     xml_send = kwargs["xml"].decode("utf-8")
     cert, key = extract_cert_and_key_from_pfx(certificado.pfx, certificado.password)
     cert, key = save_cert_key(cert, key)
-    client = get_authenticated_client(base_url, cert, key)
 
     try:
+        client = get_authenticated_client(base_url, cert, key)
         response = getattr(client.service, method)(xml_send)
     except suds.WebFault as e:
         return {
@@ -43,20 +41,37 @@ def _send(certificado, method, **kwargs):
             "received_xml": str(e.fault.faultstring),
             "object": None,
         }
+    except Exception as e:
+        return {
+            "sent_xml": str(xml_send),
+            "received_xml": str(e),
+            "object": None,
+        }
 
     response, obj = sanitize_response(response)
     return {"sent_xml": str(xml_send), "received_xml": str(response), "object": obj}
 
 
-def xml_gerar_nfse(certificado, **kwargs):
-    return _render(certificado, "GerarNfse", **kwargs)
+def xml_gerar_rps(certificado, **kwargs):
+    return _render(certificado, "Rps", **kwargs)
 
+def xml_gerar_lote(certificado, **kwargs):
+    if "lote" in kwargs:
+        if "lista_rps" not in kwargs["lote"] or len(kwargs["lote"]["lista_rps"]) == 0:
+            kwargs["lista_rps"] = [xml_gerar_rps(certificado, **kwargs)]
+        return _render(certificado, "EnviarLoteRpsEnvio", **kwargs)
+    else:
+        return False
 
-def gerar_nfse(certificado, **kwargs):
-    if "xml" not in kwargs:
-        kwargs["xml"] = xml_gerar_nfse(certificado, **kwargs)
-    return _send(certificado, "GerarNfse", **kwargs)
-
+def send_lote(certificado, **kwargs):
+    if "xml" in kwargs:
+        return _send(certificado, "RecepcionarLoteRps", **kwargs)
+    else:
+        return {
+            "sent_xml": False,
+            "received_xml": 'XML não enviado',
+            "object": None,
+        }
 
 def xml_cancelar_nfse(certificado, **kwargs):
     return _render(certificado, "CancelarNfse", **kwargs)
