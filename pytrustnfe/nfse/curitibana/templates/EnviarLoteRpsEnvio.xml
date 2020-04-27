@@ -1,4 +1,4 @@
-<EnviarLoteRpsEnvio xmlns = "http://isscuritiba.curitiba.pr.gov.br/iss/nfse.xsd" xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation = "http://isscuritiba.curitiba.pr.gov.br/iss/nfse.xsd">
+<EnviarLoteRpsEnvio xmlns="http://isscuritiba.curitiba.pr.gov.br/iss/nfse.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://isscuritiba.curitiba.pr.gov.br/iss/nfse.xsd">
     <LoteRps>
         <NumeroLote>{{ lote.numero_lote }}</NumeroLote>
         <Cnpj>{{ lote.cnpj_prestador }}</Cnpj>

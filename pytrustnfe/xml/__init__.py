@@ -64,13 +64,16 @@ def sanitize_response(response):
 
 
 def recursively_normalize(vals):
-    for item in vals:
-        if type(vals[item]) is str:
-            vals[item] = vals[item].strip()
-            vals[item] = filters.normalize_str(vals[item])
-        elif type(vals[item]) is dict:
-            recursively_normalize(vals[item])
-        elif type(vals[item]) is list:
-            for a in vals[item]:
-                recursively_normalize(a)
+    if type(vals) is str:
+        vals = filters.normalize_str(vals)
+    else:
+        for item in vals:
+            if type(vals[item]) is str:
+                vals[item] = vals[item].strip()
+                vals[item] = filters.normalize_str(vals[item])
+            elif type(vals[item]) is dict:
+                recursively_normalize(vals[item])
+            elif type(vals[item]) is list:
+                for a in vals[item]:
+                    recursively_normalize(a)
     return vals
