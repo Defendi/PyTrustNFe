@@ -8,9 +8,15 @@ from requests.packages.urllib3 import disable_warnings
 
 from pytrustnfe.xml import render_xml, sanitize_response
 from pytrustnfe.certificado import extract_cert_and_key_from_pfx, save_cert_key
-from pytrustnfe.nfe.assinatura import Assinatura
+from pytrustnfe.nfse.curitibana.assinatura import Assinatura
 from pytrustnfe.client import get_authenticated_client
 
+logging.basicConfig(level=logging.INFO)
+logging.getLogger('suds.client').setLevel(logging.DEBUG)
+logging.getLogger('suds.transport').setLevel(logging.DEBUG)
+logging.getLogger('suds.xsd.schema').setLevel(logging.DEBUG)
+logging.getLogger('suds.wsdl').setLevel(logging.DEBUG)
+logging.getLogger('suds').setLevel(logging.DEBUG)
 _logger = logging.getLogger(__name__)
 
 def _render(certificado, method, **kwargs):
@@ -32,7 +38,7 @@ def _send(certificado, method, **kwargs):
     cert, key = extract_cert_and_key_from_pfx(certificado.pfx, certificado.password)
     cert, key = save_cert_key(cert, key)
 
-    disable_warnings()
+    #disable_warnings()
     try:
         client = get_authenticated_client(base_url, cert, key)
     except Exception as e: 
@@ -45,7 +51,7 @@ def _send(certificado, method, **kwargs):
     try:
         xml_send = kwargs['xml']
 #         header = '<cabecalho xmlns="http://www.betha.com.br/e-nota-contribuinte-ws" versao="2.02"><versaoDados>2.02</versaoDados></cabecalho>' #noqa
-        response = getattr(client.service, method)(xml=xml_send)
+        response = getattr(client.service, method)(xml_send)
     except:
         return {
             'sent_xml': xml_send,
@@ -74,6 +80,13 @@ def xml_gerar_lote(certificado, **kwargs):
         return _render(certificado, "EnviarLoteRpsEnvio", **kwargs)
     else:
         return False
+
+def xml_gerar_lote_cancel(certificado, **kwargs):
+    if "lote" in kwargs:
+        return _render(certificado, "CancelarLoteNfseEnvio", **kwargs)
+    else:
+        return False
+
 
 def send_lote(certificado, **kwargs):
     if "xml" in kwargs:

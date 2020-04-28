@@ -1,0 +1,21 @@
+<CancelarLoteNfseEnvio>
+   <LoteCancelamento>
+      <Cnpj>{{ lote.cnpj_prestador }}</Cnpj>
+      <InscricaoMunicipal>{{ lote.inscricao_municipal }}</InscricaoMunicipal>
+      <PedidosCancelamento>
+       	{% for rps in lote.lista_rps %}
+         <PedidoCancelamento>
+            <InfPedidoCancelamento>
+               <IdentificacaoNfse>
+                  <Numero>{{ rps.nfse_number }}</Numero>
+                  <Cnpj>{{ rps.cnpj_prestador }}</Cnpj>
+                  <InscricaoMunicipal>{{ rps.inscricao_municipal }}</InscricaoMunicipal>
+                  <CodigoMunicipio>{{ rps.cidade }}</CodigoMunicipio>
+               </IdentificacaoNfse>
+               <CodigoCancelamento>{{ rps.cod_cancel }}</CodigoCancelamento>
+            </InfPedidoCancelamento>
+         </PedidoCancelamento>
+        {% endfor %}
+      </PedidosCancelamento>
+   </LoteCancelamento>
+</CancelarLoteNfseEnvio>
