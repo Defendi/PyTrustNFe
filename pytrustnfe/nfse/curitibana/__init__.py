@@ -11,12 +11,12 @@ from pytrustnfe.certificado import extract_cert_and_key_from_pfx, save_cert_key
 from pytrustnfe.nfse.curitibana.assinatura import Assinatura
 from pytrustnfe.client import get_authenticated_client
 
-logging.basicConfig(level=logging.INFO)
-logging.getLogger('suds.client').setLevel(logging.DEBUG)
-logging.getLogger('suds.transport').setLevel(logging.DEBUG)
-logging.getLogger('suds.xsd.schema').setLevel(logging.DEBUG)
-logging.getLogger('suds.wsdl').setLevel(logging.DEBUG)
-logging.getLogger('suds').setLevel(logging.DEBUG)
+# logging.basicConfig(level=logging.INFO)
+# logging.getLogger('suds.client').setLevel(logging.DEBUG)
+# logging.getLogger('suds.transport').setLevel(logging.DEBUG)
+# logging.getLogger('suds.xsd.schema').setLevel(logging.DEBUG)
+# logging.getLogger('suds.wsdl').setLevel(logging.DEBUG)
+# logging.getLogger('suds').setLevel(logging.DEBUG)
 _logger = logging.getLogger(__name__)
 
 def _render(certificado, method, **kwargs):
@@ -24,6 +24,10 @@ def _render(certificado, method, **kwargs):
     xml_send = render_xml(path, "%s.xml" % method, True, **kwargs)
 #     xml_send = etree.tostring(xml_send,encoding='unicode')
     reference = ""
+#     if method == "Rps":
+#         reference = "r%s" % kwargs['rps']['numero']
+#     else:
+#         reference = ""
     signer = Assinatura(certificado.pfx, certificado.password)
     xml_send = signer.assina_xml(xml_send, reference)
     return xml_send
@@ -38,7 +42,7 @@ def _send(certificado, method, **kwargs):
     cert, key = extract_cert_and_key_from_pfx(certificado.pfx, certificado.password)
     cert, key = save_cert_key(cert, key)
 
-    #disable_warnings()
+    disable_warnings()
     try:
         client = get_authenticated_client(base_url, cert, key)
     except Exception as e: 
@@ -51,11 +55,11 @@ def _send(certificado, method, **kwargs):
     try:
         xml_send = kwargs['xml']
 #         header = '<cabecalho xmlns="http://www.betha.com.br/e-nota-contribuinte-ws" versao="2.02"><versaoDados>2.02</versaoDados></cabecalho>' #noqa
-        response = getattr(client.service, method)(xml_send)
-    except:
+        response = getattr(client.service, method)()
+    except Exception as e: 
         return {
             'sent_xml': xml_send,
-            'received_xml': e.fault.faultstring,
+            'received_xml': str(e),
             'object': None
         }
     print(str(response))
@@ -90,7 +94,8 @@ def xml_gerar_lote_cancel(certificado, **kwargs):
 
 def send_lote(certificado, **kwargs):
     if "xml" in kwargs:
-        return _send(certificado, "RecepcionarLoteRps", **kwargs)
+        #return _send(certificado, "RecepcionarLoteRps", **kwargs)
+        return _send(certificado, "ValidarXml", **kwargs)
     else:
         return {
             "sent_xml": False,

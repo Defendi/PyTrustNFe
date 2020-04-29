@@ -15,6 +15,7 @@
             <Valores>
                 <ValorServicos>{{ rps.valor_servico }}</ValorServicos>
                 <ValorDeducoes>{{ rps.valor_deducao }}</ValorDeducoes>
+                <NumeroDeducao>{{ rps.numero_deducao }}</NumeroDeducao>
                 <ValorPis>{{ rps.valor_pis }}</ValorPis>
                 <ValorCofins>{{ rps.valor_cofins }}</ValorCofins>
                 <ValorInss>{{ rps.valor_inss }}</ValorInss>
@@ -22,11 +23,11 @@
                 <ValorCsll>{{ rps.valor_csll }}</ValorCsll>
                 <IssRetido>{{ rps.iss_retido }}</IssRetido>
                 <ValorIss>{{ rps.valor_iss }}</ValorIss>
+                <ValorIssRetido>{{ rps.valor_iss_retido }}</ValorIssRetido>
                 <OutrasRetencoes>{{ rps.outras_retencoes }}</OutrasRetencoes>
                 <BaseCalculo>{{ rps.base_calculo }}</BaseCalculo>
                 <Aliquota>{{ rps.aliquota_iss }}</Aliquota>
                 <ValorLiquidoNfse>{{ rps.valor_liquido }}</ValorLiquidoNfse>
-                <ValorIssRetido>{{ rps.valor_iss_retido }}</ValorIssRetido>
                 <DescontoIncondicionado>{{ rps.desconto_incondicionado }}</DescontoIncondicionado>
                 <DescontoCondicionado>{{ rps.desconto_condicionado }}</DescontoCondicionado>
             </Valores>

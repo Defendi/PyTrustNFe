@@ -24,20 +24,21 @@ class test_nfse_curitibana(unittest.TestCase):
             'status': '1',  # 1 - Normal
             'valor_servico': '100.00',
             'valor_deducao': '0.00',
+            'numero_deducao': '0',
             'valor_pis': '0.00',
             'valor_cofins': '0.00',
             'valor_inss': '0.00',
             'valor_ir': '0.00',
             'valor_csll': '0.00',
-            'outras_retencoes': '0.00',
             'iss_retido': '2',
             'valor_iss': '0.00',
             'valor_iss_retido': '0.00',
-            'desconto_incondicionado': '0.00',
-            'desconto_condicionado': '0.00',
+            'outras_retencoes': '0.00',
             'base_calculo': '100.00',
             'aliquota_iss': '2.0000',
             'valor_liquido': '2.00',
+            'desconto_incondicionado': '0.00',
+            'desconto_condicionado': '0.00',
             'codigo_servico': '1719',
             'codigo_tributacao_municipio': '',
             'descricao': 'Venda de Servico',
@@ -91,7 +92,9 @@ class test_nfse_curitibana(unittest.TestCase):
     def test_valid_lote(self):
         NFSe_to_send = self._get_valid_lote()
         #return NFSe_to_send
-        with open('/home/defendi/Documentos/lote.xml', 'a') as outxml:
+        with open('/home/defendi/Documentos/rps.xml', 'w') as outxml:
+            outxml.write(NFSe_to_send['xml_rps']+'\n')
+        with open('/home/defendi/Documentos/lote.xml', 'w') as outxml:
             outxml.write(NFSe_to_send['xml_lote']+'\n')
         return send_lote(NFSe_to_send['Certificado'], xml=NFSe_to_send['xml_lote'], ambiente='homologacao')
 
