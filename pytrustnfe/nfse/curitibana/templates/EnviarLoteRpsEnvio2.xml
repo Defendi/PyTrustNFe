@@ -1,9 +1,13 @@
-<EnviarLoteRpsEnvio xmlns="http://isscuritiba.curitiba.pr.gov.br/iss/nfse.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://isscuritiba.curitiba.pr.gov.br/iss/nfse.xsd">
+<EnviarLoteRpsEnvio>
     <LoteRps>
         <NumeroLote>{{ lote.numero_lote }}</NumeroLote>
         <Cnpj>{{ lote.cnpj_prestador }}</Cnpj>
         <InscricaoMunicipal>{{ lote.inscricao_municipal }}</InscricaoMunicipal>
         <QuantidadeRps>{{ lote.lista_rps|length }}</QuantidadeRps>
-        <ListaRps>loterps</ListaRps>
+        <ListaRps>
+        	{% for RPS in lote.lista_rps %}
+        		{{ RPS|normalize }}
+        	{% endfor %}
+        </ListaRps>
     </LoteRps>
 </EnviarLoteRpsEnvio>

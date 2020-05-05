@@ -1,12 +1,16 @@
 import mock
 import os.path
 import unittest
+from lxml import etree
 
 from pytrustnfe.nfse.curitibana import xml_gerar_rps
 from pytrustnfe.nfse.curitibana import xml_gerar_lote
 from pytrustnfe.nfse.curitibana import send_lote
 from pytrustnfe.nfse.curitibana import valid_xml
 from pytrustnfe.certificado import Certificado
+from pytrustnfe.nfe.assinatura import Assinatura
+
+_MODE = 'homologacao'
 
 class test_nfse_curitibana(unittest.TestCase):
 
@@ -14,8 +18,8 @@ class test_nfse_curitibana(unittest.TestCase):
 
     def _get_rps(self):
         rps = {
-            'numero': '1',
-            'serie': '1',
+            'numero': '100',
+            'serie': 'CWB',
             'tipo_rps': '1',
             'data_emissao': '2020-04-16T21:00:53',
             'natureza_operacao': '1',
@@ -61,22 +65,26 @@ class test_nfse_curitibana(unittest.TestCase):
             },
             'prestador': {
                 'cnpj': '14793990000177',
-                'inscricao_municipal': '17196308664',
+                'inscricao_municipal': '171906308664',
             },
         }
         return rps
 
-    def _get_lote(self,xml_rps):
+    def _get_lote(self,lista_rps):
         lote = {
-            'numero_lote': '1',
-            'inscricao_municipal': '17196308664',
+            'numero_lote': '38',
+            'inscricao_municipal': '171906308664',
             'cnpj_prestador': '14793990000177',
-            'lista_rps': [xml_rps],
+            'lista_rps': lista_rps,
         }
         return lote
 
     def _get_certificado(self):
-        pfx_source = open(os.path.join(self.caminho+'/cert', 'teste.pfx'),'rb').read()
+        if _MODE == 'producao':
+            pfx_source = open("/home/defendi/Projetos/Python/3/PyTrustNFe/PyTrustNFeDefendi/tests/cert/teste.pfx",'rb').read()
+        else:
+            pfx_source = open("/home/defendi/Projetos/Python/3/PyTrustNFe/PyTrustNFeDefendi/tests/cert/teste.pfx",'rb').read()
+            
         #pfx_password = os.path.join(self.caminho+'/cert', 'key.txt')
         return Certificado(pfx_source, '1234')
 
@@ -85,8 +93,9 @@ class test_nfse_curitibana(unittest.TestCase):
         res['Certificado'] = self._get_certificado() 
         rps = self._get_rps()
         res['xml_rps'] = xml_gerar_rps(res['Certificado'], rps=rps)
-        lote = self._get_lote(res['xml_rps'])
-        res['xml_lote'] = xml_gerar_lote(res['Certificado'], lote=lote)
+        lote = self._get_lote([res['xml_rps']])
+        xml_send = xml_gerar_lote(res['Certificado'], lote=lote)
+        res['xml_lote'] = xml_send
         return res
 
     def test_valid_lote(self):
@@ -96,13 +105,13 @@ class test_nfse_curitibana(unittest.TestCase):
             outxml.write(NFSe_to_send['xml_rps']+'\n')
         with open('/home/defendi/Documentos/lote.xml', 'w') as outxml:
             outxml.write(NFSe_to_send['xml_lote']+'\n')
-        return send_lote(NFSe_to_send['Certificado'], xml=NFSe_to_send['xml_lote'], ambiente='homologacao')
+        return send_lote(NFSe_to_send['Certificado'], xml=NFSe_to_send['xml_lote'], ambiente='xproducao')
+#         return False
 
 def main():
     nfse = test_nfse_curitibana()
     ret = nfse.test_valid_lote()
     print(str(ret))
-
 
 if __name__ == '__main__':
     main()
