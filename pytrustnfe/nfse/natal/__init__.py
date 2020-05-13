@@ -24,9 +24,9 @@ def sign_rps(path, certificado, **kwargs):
             xml_rps = render_xml(path, "Rps.xml", True, **data)
 
             signer = Assinatura(certificado.pfx, certificado.password)
-#             lote += signer.assina_xml(
-#                 xml_rps, f"rps:{item.get('numero')}{item.get('serie')}", getchildren=True
-#             )
+            lote += signer.assina_xml(
+                xml_rps, "rps:{item.get('numero')}{item.get('serie')}", getchildren=True
+            )
         return lote
     return ""
 
@@ -49,7 +49,7 @@ def _render(certificado, method, **kwargs):
     signer = Assinatura(certificado.pfx, certificado.password)
 
     xml_send = signer.assina_xml(etree.fromstring(
-        xml_send, parser=parser), f"{referencia}", getchildren=True)
+        xml_send, parser=parser), "{referencia}", getchildren=True)
     return xml_send
 
 
