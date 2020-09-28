@@ -705,8 +705,11 @@
                 {% if det.impostoDevol is defined %}
                 <impostoDevol>
                     <pDevol>{{ det.impostoDevol.pDevol }}</pDevol>
-                    <IPI>{{ det.impostoDevol.IPI }}</IPI>
-                    <vIPIDevol>{{ det.impostoDevol.vIPIDevol }}</vIPIDevol>
+                    {% if det.impostoDevol.vIPIDevol is defined %}
+                    <IPI>
+                    	<vIPIDevol>{{ det.impostoDevol.vIPIDevol }}</vIPIDevol>
+                    </IPI>
+                    {% endif %}
                 </impostoDevol>
                 {% endif %}
                 {% if det.infAdProd %}

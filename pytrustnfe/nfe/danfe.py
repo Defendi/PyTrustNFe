@@ -122,7 +122,7 @@ class danfe(object):
 
     def __init__(self, sizepage=A4, list_xml=None, recibo=True,
                  orientation='portrait', logo=None, cce_xml=None,
-                 timezone=None):
+                 timezone=None, rascunho=False):
 
         path = os.path.join(os.path.dirname(__file__), 'fonts')
         pdfmetrics.registerFont(
@@ -131,6 +131,7 @@ class danfe(object):
         pdfmetrics.registerFont(
             TTFont('NimbusSanL-Bold',
                    os.path.join(path, 'NimbusSanL Bold.ttf')))
+        self.rascunho = rascunho
         self.width = 210    # 21 x 29,7cm
         self.height = 297
         self.nLeft = 10
@@ -372,13 +373,16 @@ class danfe(object):
                  (self.height - self.nlin - 32) * mm)
 
         # Homologação
-        if tagtext(oNode=elem_ide, cTag='tpAmb') == '2':
+        if tagtext(oNode=elem_ide, cTag='tpAmb') == '2' or self.rascunho:
             self.canvas.saveState()
             self.canvas.rotate(90)
             self.canvas.setFont('Times-Bold', 40)
             self.canvas.setFillColorRGB(0.57, 0.57, 0.57)
-            self.string(self.nLeft + 65, 449, 'SEM VALOR FISCAL')
+            if self.rascunho:
+                self.string(self.nLeft + 80, 379, 'RASCUNHO')
+            self.string(self.nLeft + 65, 419, 'SEM VALOR FISCAL')
             self.canvas.restoreState()
+
 
         # Cancelado
         if tagtext(oNode=elem_evento, cTag='cStat') in ('135','155'):

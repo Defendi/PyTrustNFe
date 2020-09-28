@@ -50,17 +50,20 @@ def render_xml(path, template_name, remove_empty, **nfe):
 
 
 def sanitize_response(response):
-    parser = etree.XMLParser(encoding='utf-8')
-    tree = etree.fromstring(response.encode('UTF-8'), parser=parser)
-    # Remove namespaces inuteis na resposta
-    for elem in tree.getiterator():
-        if not hasattr(elem.tag, 'find'):
-            continue
-        i = elem.tag.find('}')
-        if i >= 0:
-            elem.tag = elem.tag[i + 1:]
-    objectify.deannotate(tree, cleanup_namespaces=True)
-    return response, objectify.fromstring(etree.tostring(tree))
+    try:
+        parser = etree.XMLParser(encoding='utf-8')
+        tree = etree.fromstring(response.encode('UTF-8'), parser=parser)
+        # Remove namespaces inuteis na resposta
+        for elem in tree.getiterator():
+            if not hasattr(elem.tag, 'find'):
+                continue
+            i = elem.tag.find('}')
+            if i >= 0:
+                elem.tag = elem.tag[i + 1:]
+        objectify.deannotate(tree, cleanup_namespaces=True)
+        return response, objectify.fromstring(etree.tostring(tree))
+    except:
+        return response, None
 
 
 def recursively_normalize(vals):

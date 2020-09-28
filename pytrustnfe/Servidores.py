@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # © 2016 Danimar Ribeiro
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
@@ -13,9 +12,9 @@ WS_NFE_RET_AUTORIZACAO = 'NfeRetAutorizacao'
 # Alguns estados possuem essa consulta não todos
 WS_NFE_CADASTRO = 'NfeConsultaCadastro'
 
-
 # Ambiente nacional
 WS_NFCE_QR_CODE = 'NfeQRCode'
+WS_NFCE_URL = 'NfceUrlConsulta'
 WS_NFCE_CONSULTA_DESTINADAS = 'NfeConsultaDest'
 WS_DFE_DISTRIBUICAO = 'NFeDistribuicaoDFe'
 WS_DOWNLOAD_NFE = 'nfeDistDFeInteresse'
@@ -59,7 +58,6 @@ SIGLA_ESTADO = {
     '91': 'AN'
 }
 
-
 def localizar_url(servico, estado, mod='55', ambiente=2):
     sigla = SIGLA_ESTADO[estado]
     ws = ESTADO_WS[sigla]
@@ -77,19 +75,23 @@ def localizar_url(servico, estado, mod='55', ambiente=2):
     if sigla == 'RS' and servico == WS_NFE_CADASTRO:
         dominio = 'cad.sefazrs.rs.gov.br'
     if sigla in ('AC', 'RN', 'PB', 'SC', 'RJ') and \
-       servico == WS_NFE_CADASTRO:
+        servico == WS_NFE_CADASTRO:
         dominio = 'cad.svrs.rs.gov.br'
     if sigla == 'AN' and servico == WS_NFE_RECEPCAO_EVENTO:
         dominio = 'www.nfe.fazenda.gov.br'
 
     return "https://%s/%s" % (dominio, complemento)
 
-
 def localizar_qrcode(estado, ambiente=2):
     sigla = SIGLA_ESTADO[estado]
     ws_qrcode = ESTADO_WS[sigla][NFCE_MODELO][ambiente][WS_NFCE_QR_CODE]
     return ws_qrcode
 
+def localizar_url_nfce(estado, ambiente=2):
+    sigla = SIGLA_ESTADO[estado]
+    ws_qrcode = ESTADO_WS[sigla][NFCE_MODELO][ambiente][WS_NFCE_URL]
+
+    return ws_qrcode
 
 METODO_WS = {
     WS_NFE_AUTORIZACAO: {
@@ -240,7 +242,7 @@ AN = {
         WS_DFE_DISTRIBUICAO: 'NFeDistribuicaoDFe/NFeDistribuicaoDFe.asmx?wsdl',
         WS_DOWNLOAD_NFE: 'NFeDistribuicaoDFe/NFeDistribuicaoDFe.asmx?wsdl',
         WS_NFE_RECEPCAO_EVENTO: 'NFeRecepcaoEvento4/NFeRecepcaoEvento4.asmx?Wsdl',  # noqa
-    },
+    }
 }
 
 UFAM = {
@@ -276,6 +278,8 @@ UFAM = {
             WS_NFE_CONSULTA: 'services2/services/NfeConsulta2',
             WS_NFE_SITUACAO: 'services2/services/NfeStatusServico2',
             WS_NFE_CADASTRO: 'services2/services/cadconsultacadastro2',
+            WS_NFCE_QR_CODE: 'http://sistemas.sefaz.am.gov.br/nfceweb/consultarNFCe.jsp?',
+            WS_NFCE_URL: 'https://sefaz.am.gov.br/nfceweb/formConsulta.do',
         },
         AMBIENTE_HOMOLOGACAO: {
             'servidor': 'homnfce.sefaz.am.gov.br',
@@ -286,6 +290,8 @@ UFAM = {
             WS_NFE_CONSULTA: 'nfce-services-nac/services/NfeConsulta2',
             WS_NFE_SITUACAO: 'nfce-services-nac/services/NfeStatusServico2',
             WS_NFCE_QR_CODE: 'http://homnfce.sefaz.am.gov.br/nfceweb/consultarNFCe.jsp',
+            WS_NFCE_QR_CODE: 'http://homnfce.sefaz.am.gov.br/nfceweb/consultarNFCe.jsp?',
+            WS_NFCE_URL: 'https://sefaz.am.gov.br/nfceweb/formConsulta.do',
         }
     }
 }
@@ -333,9 +339,34 @@ UFCE = {
         WS_NFE_AUTORIZACAO: 'nfe4/services/NFeAutorizacao4?wsdl',
         WS_NFE_RET_AUTORIZACAO: 'nfe4/services/NFeRetAutorizacao4?wsdl',
         WS_NFE_CADASTRO: 'nfe4/services/CadConsultaCadastro4?wsdl',
+    },
+    NFCE_MODELO: {
+        AMBIENTE_PRODUCAO: {
+            'servidor': 'nfce.sefaz.ce.gov.br',
+            WS_NFE_RECEPCAO_EVENTO: 'nfce4/services/NFeRecepcaoEvento4?WSDL',
+            WS_NFE_INUTILIZACAO: 'nfce4/services/NFeInutilizacao4?WSDL',
+            WS_NFE_AUTORIZACAO: 'nfce4/services/NFeAutorizacao4?WSDL',
+            WS_NFE_RET_AUTORIZACAO: 'nfce4/services/NFeRetAutorizacao4?WSDL',  # noqa
+            WS_NFE_CADASTRO: 'nfce4/services/CadConsultaCadastro4?WSDL',   # noqa
+            WS_NFE_CONSULTA: 'nfce4/services/NFeConsultaProtocolo4?WSDL',
+            WS_NFE_SITUACAO: 'nfce4/services/NFeStatusServico4?WSDL',
+            WS_NFCE_QR_CODE: 'http://nfce.sefaz.ce.gov.br/pages/ShowNFCe.html',
+            WS_NFCE_URL: 'http://www.sefaz.ce.gov.br/nfce/consulta',
+        },
+        AMBIENTE_HOMOLOGACAO: {
+            'servidor': 'nfceh.sefaz.ce.gov.br',
+            WS_NFE_RECEPCAO_EVENTO: 'nfce4/services/NFeRecepcaoEvento4?WSDL',
+            WS_NFE_INUTILIZACAO: 'nfce4/services/NFeInutilizacao4?WSDL',
+            WS_NFE_AUTORIZACAO: 'nfce4/services/NFeAutorizacao4?WSDL',
+            WS_NFE_RET_AUTORIZACAO: 'nfce4/services/NFeRetAutorizacao4?WSDL',  # noqa
+            WS_NFE_CADASTRO: 'nfce4/services/CadConsultaCadastro4?WSDL',   # noqa
+            WS_NFE_CONSULTA: 'nfce4/services/NFeConsultaProtocolo4?WSDL',
+            WS_NFE_SITUACAO: 'nfce4/services/NFeStatusServico4?WSDL',
+            WS_NFCE_QR_CODE: 'http://nfceh.sefaz.ce.gov.br/pages/ShowNFCe.html',
+            WS_NFCE_URL: 'http://www.sefaz.ce.gov.br/nfce/consulta',
+        }
     }
 }
-
 
 UFGO = {
     AMBIENTE_PRODUCAO: {
@@ -428,6 +459,32 @@ UFMG = {
         WS_NFE_AUTORIZACAO: 'nfe2/services/NFeAutorizacao4?wsdl',
         WS_NFE_RET_AUTORIZACAO: 'nfe2/services/NFeRetAutorizacao4?wsdl',
         WS_NFE_CADASTRO: 'nfe2/services/cadconsultacadastro2?wsdl',
+    },
+    NFCE_MODELO: {
+        AMBIENTE_PRODUCAO: {
+            'servidor': 'nfce.fazenda.mg.gov.br',
+            WS_NFE_RECEPCAO_EVENTO: 'nfce/services/NFeRecepcaoEvento4?wsdl',
+            WS_NFE_AUTORIZACAO: 'nfce/services/NFeAutorizacao4?wsdl',
+            WS_NFE_RET_AUTORIZACAO: 'nfce/services/NFeRetAutorizacao4?wsdl',
+            WS_NFE_CADASTRO: 'nfce/services/CadConsultaCadastro4?wsdl',
+            WS_NFE_INUTILIZACAO: 'nfce/services/NFeInutilizacao4?wsdl',
+            WS_NFE_CONSULTA: 'nfce/services/NFeConsultaProtocolo4?wsdl',
+            WS_NFE_SITUACAO: 'nfce/services/NFeStatusServico4?wsdl',
+            WS_NFCE_QR_CODE: 'https://nfce.fazenda.mg.gov.br/portalnfce/sistema/qrcode.xhtml?',
+            WS_NFCE_URL: 'http://nfce.fazenda.mg.gov.br/portalnfce'
+        },
+        AMBIENTE_HOMOLOGACAO: {
+            'servidor': 'hnfce.fazenda.mg.gov.br',
+            WS_NFE_RECEPCAO_EVENTO: 'nfce/services/NFeRecepcaoEvento4?wsdl',
+            WS_NFE_AUTORIZACAO: 'nfce/services/NFeAutorizacao4?wsdl',
+            WS_NFE_RET_AUTORIZACAO: 'nfce/services/NFeRetAutorizacao4?wsdl',
+            WS_NFE_CADASTRO: 'nfce/services/CadConsultaCadastro4?wsdl',
+            WS_NFE_INUTILIZACAO: 'nfce/services/NFeInutilizacao4?wsdl',
+            WS_NFE_CONSULTA: 'nfce/services/NFeConsultaProtocolo4?wsdl',
+            WS_NFE_SITUACAO: 'nfce/services/NFeStatusServico4?wsdl',
+            WS_NFCE_QR_CODE: 'https://nfce.fazenda.mg.gov.br/portalnfce/sistema/qrcode.xhtml?',
+            WS_NFCE_URL: 'http://hnfce.fazenda.mg.gov.br/portalnfce'
+        }
     }
 }
 
@@ -464,6 +521,7 @@ UFPR = {
             WS_NFE_AUTORIZACAO: 'nfce/NFeAutorizacao4?wsdl',
             WS_NFE_RET_AUTORIZACAO: 'nfce/NFeRetAutorizacao4?wsdl',
             WS_NFCE_QR_CODE: 'http://www.fazenda.pr.gov.br/nfce/qrcode',
+            WS_NFCE_URL: 'http://www.fazenda.pr.gov.br/nfce/consulta'
         },
         AMBIENTE_HOMOLOGACAO: {
             'servidor': 'homologacao.nfce.sefa.pr.gov.br',
@@ -474,6 +532,7 @@ UFPR = {
             WS_NFE_AUTORIZACAO: 'nfce/NFeAutorizacao4?wsdl',
             WS_NFE_RET_AUTORIZACAO: 'nfce/NFeRetAutorizacao4?wsdl',
             WS_NFCE_QR_CODE: 'http://www.fazenda.pr.gov.br/nfce/qrcode',
+            WS_NFCE_URL: 'http://www.fazenda.pr.gov.br/nfce/consulta'
         }
     }
 }
@@ -498,6 +557,30 @@ UFPE = {
         WS_NFE_AUTORIZACAO: 'nfe-service/services/NFeAutorizacao4?wsdl',
         WS_NFE_RET_AUTORIZACAO: 'nfe-service/services/NFeRetAutorizacao4?wsdl',
         WS_NFE_CADASTRO: 'nfe-service/services/CadConsultaCadastro2?wsdl',
+    },
+    NFCE_MODELO: {
+        AMBIENTE_PRODUCAO: {
+            'servidor': 'nfce.svrs.rs.gov.br',
+            WS_NFE_RECEPCAO_EVENTO: 'ws/recepcaoevento/recepcaoevento4.asmx?wsdl',
+            WS_NFE_AUTORIZACAO: 'ws/NfeAutorizacao/NFeAutorizacao4.asmx?wsdl',
+            WS_NFE_RET_AUTORIZACAO: 'ws/NfeAutorizacao/NFeAutorizacao4.asmx?wsdl',
+            WS_NFE_INUTILIZACAO: 'ws/nfeinutilizacao/nfeinutilizacao4.asmx?wsdl',
+            WS_NFE_CONSULTA: 'ws/NfeConsulta/NfeConsulta4.asmx?wsdl',
+            WS_NFE_SITUACAO: 'ws/NfeStatusServico/NfeStatusServico4.asmx?wsdl',
+            WS_NFCE_QR_CODE: 'http://nfce.sefaz.pe.gov.br/nfce-web/consultarNFCe?',
+            WS_NFCE_URL: 'http://nfcehomolog.sefaz.pe.gov.br/nfce/consulta'
+        },
+        AMBIENTE_HOMOLOGACAO: {
+            'servidor': 'nfce-homologacao.svrs.rs.gov.br',
+            WS_NFE_RECEPCAO_EVENTO: 'ws/recepcaoevento/recepcaoevento4.asmx?wsdl',
+            WS_NFE_AUTORIZACAO: 'ws/NfeAutorizacao/NFeAutorizacao4.asmx?wsdl',
+            WS_NFE_RET_AUTORIZACAO: 'ws/NfeAutorizacao/NFeAutorizacao4.asmx?wsdl',
+            WS_NFE_INUTILIZACAO: 'ws/nfeinutilizacao/nfeinutilizacao4.asmx?wsdl',
+            WS_NFE_CONSULTA: 'ws/NfeConsulta/NfeConsulta4.asmx?wsdl',
+            WS_NFE_SITUACAO: 'ws/NfeStatusServico/NfeStatusServico4.asmx?wsdl',
+            WS_NFCE_QR_CODE: 'http://nfcehomolog.sefaz.pe.gov.br/nfce-web/consultarNFCe?',
+            WS_NFCE_URL: 'http://nfcehomolog.sefaz.pe.gov.br/nfce/consulta'
+        }
     }
 }
 
@@ -585,6 +668,7 @@ UFSP = {
             WS_NFE_CADASTRO: 'ws/cadconsultacadastro2.asmx',
             WS_NFE_RECEPCAO_EVENTO: 'ws/recepcaoevento.asmx',
             WS_NFCE_QR_CODE: '',
+            WS_NFCE_URL: 'https://www.nfce.fazenda.sp.gov.br/consulta',
         },
         AMBIENTE_HOMOLOGACAO: {
             'servidor': 'homologacao.nfce.fazenda.sp.gov.br',
@@ -596,10 +680,10 @@ UFSP = {
             WS_NFE_CADASTRO: 'ws/cadconsultacadastro2.asmx',
             WS_NFE_RECEPCAO_EVENTO: 'ws/recepcaoevento.asmx',
             WS_NFCE_QR_CODE: 'https://homologacao.nfce.fazenda.sp.gov.br/NFCEConsultaPublica/Paginas/ConstultaQRCode.aspx',
+            WS_NFCE_URL: 'https://www.homologacao.nfce.fazenda.sp.gov.br/consulta',
         }
     }
 }
-
 
 ESTADO_WS = {
     'AC': SVRS,
@@ -615,7 +699,7 @@ ESTADO_WS = {
     'MG': UFMG,
     'MS': UFMS,
     'MT': UFMT,
-    'PA': SVAN,
+    'PA': SVRS,
     'PB': SVRS,
     'PE': UFPE,
     'PI': SVAN,
