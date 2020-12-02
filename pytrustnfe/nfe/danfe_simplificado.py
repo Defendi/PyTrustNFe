@@ -330,9 +330,9 @@ class danfe_simplificado(object):
 
         # Logo
         if self.logo:
-            img, nwidth, nheight = get_image(self.logo, height=5 * mm)
+            img, nwidth, nheight = get_image(self.logo, height=8 * mm)
             ih = (85 * mm / 2) - (nwidth / 2)
-            img.drawOn(self.canvas, (self.nLeft * mm) + ih, ((self.height - self.pLin - 20) * mm) - nheight)
+            img.drawOn(self.canvas, (self.nLeft + 1) * mm, ((self.height - self.pLin - 9) * mm) - nheight)
         
         barcode128.drawOn(self.canvas, (self.nLeft + 25) * mm,(self.height - self.pLin - 20) * mm)
  
@@ -441,7 +441,8 @@ class danfe_simplificado(object):
         self.hline(3, self.pLin, self.width - 3)
         self.canvas.setFont('NimbusSanL-Bold', 5)
         self.string(self.nLeft+60, self.pLin + 2, 'TOTAL DA NOTA')
-        self.stringRight(self.nLeft+97, self.pLin + 2, format_number(tagtext(oNode=el_ICMSTot, cTag='vNF')))
+        self.canvas.setFont('NimbusSanL-Regu', 8)
+        self.stringRight(self.nLeft+97, self.pLin + 2.5, format_number(tagtext(oNode=el_ICMSTot, cTag='vNF')))
         self.pLin += 3
 
         self.hline(3, self.pLin, self.width - 3)
