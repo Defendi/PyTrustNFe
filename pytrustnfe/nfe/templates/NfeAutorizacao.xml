@@ -390,6 +390,10 @@
                             <vBCFCPSTRet>{{ imposto.ICMS.vBCFCPSTRet }}</vBCFCPSTRet>
                             <pFCPSTRet>{{ imposto.ICMS.pFCPSTRet }}</pFCPSTRet>
                             <vFCPSTRet>{{ imposto.ICMS.vFCPSTRet }}</vFCPSTRet>
+                            <pRedBCEfet>{{ imposto.ICMS.pRedBCEfet }}</pRedBCEfet>
+                            <vBCEfet>{{ imposto.ICMS.vBCEfet }}</vBCEfet>
+                            <pICMSEfet>{{ imposto.ICMS.pICMSEfet }}</pICMSEfet>
+                            <vICMSEfet>{{ imposto.ICMS.vICMSEfet }}</vICMSEfet>
                         </ICMS60>
                         {% endif %}
                         {% if imposto.ICMS.CST == '70' -%}
@@ -525,6 +529,10 @@
                             <vICMSSTRet>{{ imposto.ICMS.vICMSSTRet }}</vICMSSTRet>
                             <vBCFCPSTRet>{{ imposto.ICMS.vBCFCPSTRet }}</vBCFCPSTRet>
                             <pFCPSTRet>{{ imposto.ICMS.pFCPSTRet }}</pFCPSTRet>
+                            <pRedBCEfet>{{ imposto.ICMS.pRedBCEfet }}</pRedBCEfet>
+                            <vBCEfet>{{ imposto.ICMS.vBCEfet }}</vBCEfet>
+                            <pICMSEfet>{{ imposto.ICMS.pICMSEfet }}</pICMSEfet>
+                            <vICMSEfet>{{ imposto.ICMS.vICMSEfet }}</vICMSEfet>
                         </ICMSSN500>
                         {% endif %}
                         {% if imposto.ICMS.CST == '900' -%}
@@ -905,10 +913,12 @@
             </infRespTec>
             {% endif %}
         </infNFe>
+        {% if NFe.infNFe.ide.mod == '65' %}
         <infNFeSupl>
           <qrCode>{{ NFe.infNFe.qrCode }}</qrCode>
           <urlChave>{{ NFe.infNFe.urlChave }}</urlChave>
         </infNFeSupl>
+        {% endif %}
     </NFe>
     {% endfor %}
 </enviNFe>
