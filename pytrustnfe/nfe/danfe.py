@@ -124,13 +124,12 @@ class danfe(object):
                  orientation='portrait', logo=None, cce_xml=None,
                  timezone=None, rascunho=False):
 
+        tamanho_ocupado = 0
         path = os.path.join(os.path.dirname(__file__), 'fonts')
         pdfmetrics.registerFont(
-            TTFont('NimbusSanL-Regu',
-                   os.path.join(path, 'NimbusSanL Regular.ttf')))
+            TTFont('NimbusSanL-Regu',os.path.join(path, 'NimbusSanL Regular.ttf')))
         pdfmetrics.registerFont(
-            TTFont('NimbusSanL-Bold',
-                   os.path.join(path, 'NimbusSanL Bold.ttf')))
+            TTFont('NimbusSanL-Bold',os.path.join(path, 'NimbusSanL Bold.ttf')))
         self.rascunho = rascunho
         self.width = 210    # 21 x 29,7cm
         self.height = 297
@@ -159,8 +158,7 @@ class danfe(object):
         self.canvas.setStrokeColor(black)
 
         for oXML in list_xml:
-            oXML_cobr = oXML.find(
-                ".//{http://www.portalfiscal.inf.br/nfe}cobr")
+            oXML_cobr = oXML.find(".//{http://www.portalfiscal.inf.br/nfe}cobr")
 
             self.NrPages = 1
             self.Page = 1
@@ -175,8 +173,7 @@ class danfe(object):
                 list_cod_prod = []
 
                 for nId, item in enumerate(el_det):
-                    el_prod = item.find(
-                        ".//{http://www.portalfiscal.inf.br/nfe}prod")
+                    el_prod = item.find(".//{http://www.portalfiscal.inf.br/nfe}prod")
                     infAdProd = item.find(
                         ".//{http://www.portalfiscal.inf.br/nfe}infAdProd")
 
@@ -197,6 +194,8 @@ class danfe(object):
 
             self.ide_emit(oXML=oXML, timezone=timezone)
             self.destinatario(oXML=oXML, timezone=timezone)
+            tamanho_ocupado += self.entrega_retirada(
+                    oXML=oXML, timezone=timezone)
 
             if oXML_cobr is not None:
                 self.faturas(oXML=oXML_cobr, timezone=timezone)
@@ -208,7 +207,7 @@ class danfe(object):
                 oXML=oXML, el_det=el_det, max_index=nId,
                 list_desc=list_desc, list_cod_prod=list_cod_prod)
 
-            tamanho_ocupado = self.calculo_issqn(oXML=oXML)
+            tamanho_ocupado += self.calculo_issqn(oXML=oXML)
             self.adicionais(oXML=oXML, tamanho_diminuir=tamanho_ocupado)
 
             # Gera o restante das páginas do XML
@@ -231,18 +230,14 @@ class danfe(object):
         self.canvas.save()
 
     def ide_emit(self, oXML=None, timezone=None):
-        elem_infNFe = oXML.find(
-            ".//{http://www.portalfiscal.inf.br/nfe}infNFe")
-        elem_protNFe = oXML.find(
-            ".//{http://www.portalfiscal.inf.br/nfe}protNFe")
+        elem_infNFe = oXML.find(".//{http://www.portalfiscal.inf.br/nfe}infNFe")
+        elem_protNFe = oXML.find(".//{http://www.portalfiscal.inf.br/nfe}protNFe")
         elem_emit = oXML.find(".//{http://www.portalfiscal.inf.br/nfe}emit")
         elem_ide = oXML.find(".//{http://www.portalfiscal.inf.br/nfe}ide")
-        elem_evento = oXML.find(
-            ".//{http://www.portalfiscal.inf.br/nfe}infEvento")
+        elem_evento = oXML.find(".//{http://www.portalfiscal.inf.br/nfe}infEvento")
 
         cChave = elem_infNFe.attrib.get('Id')[3:]
-        barcode128 = code128.Code128(
-            cChave, barHeight=10 * mm, barWidth=0.25 * mm)
+        barcode128 = code128.Code128(cChave, barHeight=10 * mm, barWidth=0.25 * mm)
 
         self.canvas.setLineWidth(.5)
         self.rect(self.nLeft, self.nlin + 1, self.nLeft + 75, 32)
@@ -251,11 +246,9 @@ class danfe(object):
 
         self.hline(self.nLeft + 85, self.nlin + 1, 125)
 
-        self.rect(self.nLeft + 116, self.nlin + 15,
-                  self.width - self.nLeft - self.nRight - 117, 6)
+        self.rect(self.nLeft + 116, self.nlin + 15, self.width - self.nLeft - self.nRight - 117, 6)
 
-        self.rect(self.nLeft, self.nlin + 33,
-                  self.width - self.nLeft - self.nRight, 14)
+        self.rect(self.nLeft, self.nlin + 33,self.width - self.nLeft - self.nRight, 14)
         self.hline(self.nLeft, self.nlin + 40, self.width - self.nRight)
         self.vline(self.nLeft + 60, self.nlin + 40, 7)
         self.vline(self.nLeft + 100, self.nlin + 40, 7)
@@ -276,8 +269,7 @@ class danfe(object):
         self.stringcenter(self.nLeft + 100, self.nlin + 32, cPag)
         self.canvas.setFont('NimbusSanL-Regu', 6)
         self.string(self.nLeft + 86, self.nlin + 8, 'Documento Auxiliar da')
-        self.string(self.nLeft + 86, self.nlin +
-                    10.5, 'Nota Fiscal Eletrônica')
+        self.string(self.nLeft + 86, self.nlin + 10.5, 'Nota Fiscal Eletrônica')
         self.string(self.nLeft + 86, self.nlin + 16, '0 - Entrada')
         self.string(self.nLeft + 86, self.nlin + 19, '1 - Saída')
         self.rect(self.nLeft + 105, self.nlin + 15, 8, 6)
@@ -293,11 +285,9 @@ class danfe(object):
         self.string(self.nLeft + 116, self.nlin + 2.7, 'CONTROLE DO FISCO')
 
         self.string(self.nLeft + 1, self.nlin + 34.7, 'NATUREZA DA OPERAÇÃO')
-        self.string(self.nLeft + 116, self.nlin + 34.7,
-                    'PROTOCOLO DE AUTORIZAÇÃO DE USO')
+        self.string(self.nLeft + 116, self.nlin + 34.7, 'PROTOCOLO DE AUTORIZAÇÃO DE USO')
         self.string(self.nLeft + 1, self.nlin + 41.7, 'INSCRIÇÃO ESTADUAL')
-        self.string(self.nLeft + 61, self.nlin + 41.7,
-                    'INSCRIÇÃO ESTADUAL DO SUBST. TRIB.')
+        self.string(self.nLeft + 61, self.nlin + 41.7, 'INSCRIÇÃO ESTADUAL DO SUBST. TRIB.')
         self.string(self.nLeft + 101, self.nlin + 41.7, 'CNPJ')
 
         # Conteúdo campos
@@ -448,7 +438,13 @@ class danfe(object):
         cEnd = '%s, %s %s' % (tagtext(oNode=elem_dest, cTag='xLgr'),
                               tagtext(oNode=elem_dest, cTag='nro'),
                               tagtext(oNode=elem_dest, cTag='xCpl'))
-        self.string(self.nLeft + 1, self.nlin + 14.3, cEnd)
+        if len(cEnd) > 52:
+            self.canvas.setFont("NimbusSanL-Regu", 6)
+            self.string(self.nLeft + 1, self.nlin + 12.4, cEnd[:51])
+            self.string(self.nLeft + 1, self.nlin + 14.4, cEnd[51:])
+            self.canvas.setFont("NimbusSanL-Regu", 8)
+        else:
+            self.string(self.nLeft + 1, self.nlin + 14.3, cEnd)
         self.string(nMr - 98, self.nlin + 14.3,
                     tagtext(oNode=elem_dest, cTag='xBairro'))
         self.string(nMr - 52, self.nlin + 14.3,
@@ -464,6 +460,75 @@ class danfe(object):
 
         self.nlin += 24  # Nr linhas ocupadas pelo bloco
 
+    def entrega_retirada(self, oXML=None, timezone=None):
+        elem_entrega = oXML.find(".//{http://www.portalfiscal.inf.br/nfe}entrega")
+        elem_retirada = oXML.find(".//{http://www.portalfiscal.inf.br/nfe}retirada")
+        self.canvas.setFont("NimbusSanL-Bold", 7)
+
+        if elem_entrega:
+            elem = elem_entrega
+            self.string(self.nLeft + 1, self.nlin + 1, "INFORMAÇÕES DO LOCAL DE ENTREGA")
+        elif elem_retirada:
+            elem = elem_retirada
+            self.string(self.nLeft + 1, self.nlin + 1, "INFORMAÇÕES DO LOCAL DE RETIRADA")
+        else:
+            return 0
+
+        nMr = self.width - self.nRight
+
+        self.nlin += 1
+
+        self.rect(self.nLeft, self.nlin + 2, self.width - self.nLeft - self.nRight, 20)
+        self.hline(self.nLeft, self.nlin + 8.66, self.width - self.nLeft)
+        self.hline(self.nLeft, self.nlin + 15.32, self.width - self.nLeft)
+        self.vline(nMr - 25, self.nlin + 2, 6.66)
+        self.vline(nMr - 70, self.nlin + 2, 6.66)
+        self.vline(nMr - 25, self.nlin + 8.66, 6.66)
+        self.vline(nMr - 90, self.nlin + 8.66, 6.66)
+        self.vline(nMr - 25, self.nlin + 15.32, 6.66)
+        self.vline(nMr - 37, self.nlin + 15.32, 6.66)
+        # Labels/Fields
+        self.canvas.setFont("NimbusSanL-Bold", 5)
+        self.string(self.nLeft + 1, self.nlin + 3.7, "NOME/RAZÃO SOCIAL")
+        self.string(nMr - 69, self.nlin + 3.7, "CNPJ/CPF")
+        self.string(nMr - 24, self.nlin + 3.7, "INSCRIÇÃO ESTADUAL")
+        self.string(self.nLeft + 1, self.nlin + 10.3, "ENDEREÇO")
+        self.string(nMr - 89, self.nlin + 10.3, "BAIRRO/DISTRITO")
+        self.string(nMr - 24, self.nlin + 10.3, "CEP")
+        self.string(self.nLeft + 1, self.nlin + 17.1, "MUNICÍPIO")
+        self.string(nMr - 24, self.nlin + 17.1, "FONE/FAX")
+        self.string(nMr - 36, self.nlin + 17.1, "UF")
+        # Conteúdo campos
+        self.canvas.setFont("NimbusSanL-Regu", 8)
+        self.string(
+            self.nLeft + 1, self.nlin + 7.5, tagtext(oNode=elem, cTag="xNome")
+        )
+        cnpj_cpf = tagtext(oNode=elem, cTag="CNPJ")
+        if cnpj_cpf:
+            cnpj_cpf = format_cnpj_cpf(cnpj_cpf)
+        else:
+            cnpj_cpf = format_cnpj_cpf(tagtext(oNode=elem, cTag="CPF"))
+        self.string(nMr - 69, self.nlin + 7.5, cnpj_cpf)
+        self.string(nMr - 24, self.nlin + 7.5, tagtext(oNode=elem, cTag="IE"))
+        cEnd = "%s, %s %s" % (
+            tagtext(oNode=elem, cTag="xLgr"),
+            tagtext(oNode=elem, cTag="nro"),
+            tagtext(oNode=elem, cTag="xCpl"),
+        )
+        self.string(self.nLeft + 1, self.nlin + 14.3, cEnd)
+        self.string(
+            nMr - 89, self.nlin + 14.3, tagtext(oNode=elem, cTag="xBairro")
+        )
+        self.string(nMr - 24, self.nlin + 14.3, tagtext(oNode=elem, cTag="CEP"))
+        self.string(
+            self.nLeft + 1, self.nlin + 21.1, tagtext(oNode=elem, cTag="xMun")
+        )
+        self.string(nMr - 36, self.nlin + 21.1, tagtext(oNode=elem, cTag="UF"))
+        self.string(nMr - 24, self.nlin + 21.1, tagtext(oNode=elem, cTag="fone"))
+
+        self.nlin += 24  # Nr linhas ocupadas pelo bloco
+        return 24
+    
     def faturas(self, oXML=None, timezone=None):
 
         nMr = self.width - self.nRight
