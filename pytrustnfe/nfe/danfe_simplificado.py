@@ -120,7 +120,7 @@ def get_image(path, width=False, height=False):
 
 class danfe_simplificado(object):
 
-    def __init__(self, sizepage=A5, list_xml=None, 
+    def __init__(self, sizepage=A6, list_xml=None, 
                  orientation='portrait', logo=None, cce_xml=None,
                  timezone=None, rascunho=False):
 
