@@ -439,10 +439,10 @@ class danfe(object):
                               tagtext(oNode=elem_dest, cTag='nro'),
                               tagtext(oNode=elem_dest, cTag='xCpl'))
         if len(cEnd) > 52:
-            self.canvas.setFont("NimbusSanL-Reg", 6)
+            self.canvas.setFont("NimbusSanL-Regu", 6)
             self.string(self.nLeft + 1, self.nlin + 12.4, cEnd[:51])
             self.string(self.nLeft + 1, self.nlin + 14.4, cEnd[51:])
-            self.canvas.setFont("NimbusSanL-Reg", 8)
+            self.canvas.setFont("NimbusSanL-Regu", 8)
         else:
             self.string(self.nLeft + 1, self.nlin + 14.3, cEnd)
         self.string(nMr - 98, self.nlin + 14.3,
@@ -499,7 +499,7 @@ class danfe(object):
         self.string(nMr - 24, self.nlin + 17.1, "FONE/FAX")
         self.string(nMr - 36, self.nlin + 17.1, "UF")
         # Conteúdo campos
-        self.canvas.setFont("NimbusSanL-Reg", 8)
+        self.canvas.setFont("NimbusSanL-Regu", 8)
         self.string(
             self.nLeft + 1, self.nlin + 7.5, tagtext(oNode=elem, cTag="xNome")
         )
