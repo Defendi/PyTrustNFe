@@ -438,13 +438,26 @@ class danfe(object):
         cEnd = '%s, %s %s' % (tagtext(oNode=elem_dest, cTag='xLgr'),
                               tagtext(oNode=elem_dest, cTag='nro'),
                               tagtext(oNode=elem_dest, cTag='xCpl'))
-        if len(cEnd) > 54:
+        tamEnd = len(cEnd)
+        if tamEnd >= 54 and tamEnd <= 75:
+            self.canvas.setFont("NimbusSanL-Regu", 7)
+            self.string(self.nLeft + 1, self.nlin + 14.3, cEnd)
+        elif tamEnd >= 75:
+            end_ = wrap(cEnd, 80)
             self.canvas.setFont("NimbusSanL-Regu", 6)
-            self.string(self.nLeft + 1, self.nlin + 12.4, cEnd[:51])
-            self.string(self.nLeft + 1, self.nlin + 14.4, cEnd[51:])
-            self.canvas.setFont("NimbusSanL-Regu", 8)
+            ndLin = 12.4
+            for nr, ln in enumerate(end_):
+                if nr < 2:
+                    self.string(self.nLeft + 1, self.nlin + ndLin, ln)
+                    ndLin += 2.0
+#             self.canvas.setFont("NimbusSanL-Regu", 6)
+#             self.string(self.nLeft + 1, self.nlin + 12.4, cEnd[:75])
+#             self.string(self.nLeft + 1, self.nlin + 14.4, cEnd[75:])
+            
         else:
             self.string(self.nLeft + 1, self.nlin + 14.3, cEnd)
+            
+        self.canvas.setFont("NimbusSanL-Regu", 8)
         self.string(nMr - 98, self.nlin + 14.3,
                     tagtext(oNode=elem_dest, cTag='xBairro'))
         self.string(nMr - 52, self.nlin + 14.3,
