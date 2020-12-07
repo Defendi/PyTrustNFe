@@ -223,10 +223,10 @@ class danfe(object):
                     list_cod_prod=list_cod_prod)
 
             self.newpage()
-        if cce_xml:
-            for xml in cce_xml:
-                self._generate_cce(cce_xml=xml, oXML=oXML, timezone=timezone)
-                self.newpage()
+#         if cce_xml:
+#             for xml in cce_xml:
+#                 self._generate_cce(cce_xml=xml, oXML=oXML, timezone=timezone)
+#                 self.newpage()
         self.canvas.save()
 
     def ide_emit(self, oXML=None, timezone=None):
@@ -1077,36 +1077,31 @@ obsCont[@xCampo='NomeVendedor']")
         self.hline(9, 50, 200)
 
         # values
-        infNFe = oXML.find(
-            ".//{http://www.portalfiscal.inf.br/nfe}infNFe")
-        res_partner = infNFe.find(
-            ".//{http://www.portalfiscal.inf.br/nfe}xNome")
+        infNFe = oXML.find(".//{http://www.portalfiscal.inf.br/nfe}infNFe")
+        res_partner = infNFe.find(".//{http://www.portalfiscal.inf.br/nfe}xNome")
 
-        elem_infNFe = cce_xml.find(
-            ".//{http://www.portalfiscal.inf.br/nfe}infEvento")
+        elem_infNFe = cce_xml.find(".//{http://www.portalfiscal.inf.br/nfe}infEvento")
 
         res_partner = tagtext(oNode=infNFe, cTag='xNome')
         self.string(82, 18, res_partner)
-        cnpj = format_cnpj_cpf(tagtext
-                               (oNode=elem_infNFe, cTag='CNPJ'))
+        cnpj = format_cnpj_cpf(tagtext(oNode=elem_infNFe, cTag='CNPJ'))
         self.string(82, 24, cnpj)
         chave_acesso = tagtext(oNode=elem_infNFe, cTag='chNFe')
         self.string(82, 30, chave_acesso)
-        data_correcao = getdateByTimezone(tagtext(
-            oNode=elem_infNFe, cTag='dhEvento'), timezone)
+        data_correcao = getdateByTimezone(tagtext(oNode=elem_infNFe, cTag='dhEvento'), timezone)
         data_correcao = data_correcao[0] + "  " + data_correcao[1]
         self.string(82, 36, data_correcao)
-        cce_id = elem_infNFe.values()[0]
-        self.string(82, 42, cce_id)
 
+#             cce_id = elem_infNFe.values()[0]
+#             self.string(82, 42, cce_id)
+    
         correcao = tagtext(oNode=elem_infNFe, cTag='xCorrecao')
 
-        w, h, paragraph = self._paragraph(
-            correcao, 'NimbusSanL-Regu', 10, 190 * mm, 20 * mm)
+        w, h, paragraph = self._paragraph(correcao, 'NimbusSanL-Regu', 10, 190 * mm, 20 * mm)
         paragraph.drawOn(self.canvas, 10 * mm, (297 - 52) * mm - h)
 
         self.hline(9, 54 + (h / mm), 200)
-        self.stringcenter(105, 58 + (h / mm), u"CONDIÇÃO DE USO")
+        self.stringcenter(105, 58 + (h / mm), "CONDIÇÃO DE USO")
         self.hline(9, 60 + (h / mm), 200)
 
         condicoes = tagtext(oNode=elem_infNFe, cTag='xCondUso')
