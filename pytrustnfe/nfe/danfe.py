@@ -223,10 +223,10 @@ class danfe(object):
                     list_cod_prod=list_cod_prod)
 
             self.newpage()
-#         if cce_xml:
-#             for xml in cce_xml:
-#                 self._generate_cce(cce_xml=xml, oXML=oXML, timezone=timezone)
-#                 self.newpage()
+        if cce_xml:
+            for xml in cce_xml:
+                self._generate_cce(cce_xml=xml, oXML=oXML, timezone=timezone)
+                self.newpage()
         self.canvas.save()
 
     def ide_emit(self, oXML=None, timezone=None):
@@ -439,10 +439,10 @@ class danfe(object):
                               tagtext(oNode=elem_dest, cTag='nro'),
                               tagtext(oNode=elem_dest, cTag='xCpl'))
         if len(cEnd) > 52:
-            self.canvas.setFont("NimbusSanL-Regu", 6)
+            self.canvas.setFont("NimbusSanL-Reg", 6)
             self.string(self.nLeft + 1, self.nlin + 12.4, cEnd[:51])
             self.string(self.nLeft + 1, self.nlin + 14.4, cEnd[51:])
-            self.canvas.setFont("NimbusSanL-Regu", 8)
+            self.canvas.setFont("NimbusSanL-Reg", 8)
         else:
             self.string(self.nLeft + 1, self.nlin + 14.3, cEnd)
         self.string(nMr - 98, self.nlin + 14.3,
@@ -499,7 +499,7 @@ class danfe(object):
         self.string(nMr - 24, self.nlin + 17.1, "FONE/FAX")
         self.string(nMr - 36, self.nlin + 17.1, "UF")
         # Conteúdo campos
-        self.canvas.setFont("NimbusSanL-Regu", 8)
+        self.canvas.setFont("NimbusSanL-Reg", 8)
         self.string(
             self.nLeft + 1, self.nlin + 7.5, tagtext(oNode=elem, cTag="xNome")
         )
@@ -1058,14 +1058,14 @@ obsCont[@xCampo='NomeVendedor']")
 
         # labels
         self.canvas.setFont('NimbusSanL-Bold', 12)
-        self.stringcenter(105, 10, u"Carta de Correção")
+        self.stringcenter(105, 10, "Carta de Correção")
         self.canvas.setFont('NimbusSanL-Regu', 6)
-        self.string(10, 18, u"RAZÃO SOCIAL DO EMITENTE")
-        self.string(10, 24, u"CNPJ DO EMITENTE")
-        self.string(10, 30, u"CHAVE DE ACESSO DA NF-E")
-        self.string(10, 36, u"DATA DA CORREÇÃO")
-        self.string(10, 42, u"ID")
-        self.stringcenter(105, 48, u"CORREÇÃO")
+        self.string(10, 18, "RAZÃO SOCIAL DO EMITENTE")
+        self.string(10, 24, "CNPJ DO EMITENTE")
+        self.string(10, 30, "CHAVE DE ACESSO DA NF-E")
+        self.string(10, 36, "DATA DA CORREÇÃO")
+        self.string(10, 42, "ID")
+        self.stringcenter(105, 48, "CORREÇÃO")
 
         # lines
         self.hline(9, 14, 200)
@@ -1092,8 +1092,8 @@ obsCont[@xCampo='NomeVendedor']")
         data_correcao = data_correcao[0] + "  " + data_correcao[1]
         self.string(82, 36, data_correcao)
 
-#             cce_id = elem_infNFe.values()[0]
-#             self.string(82, 42, cce_id)
+        cce_id = elem_infNFe.values()[0]
+        self.string(82, 42, cce_id)
     
         correcao = tagtext(oNode=elem_infNFe, cTag='xCorrecao')
 
