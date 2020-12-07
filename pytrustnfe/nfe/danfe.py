@@ -203,9 +203,9 @@ class danfe(object):
             self.impostos(oXML=oXML)
             self.transportes(oXML=oXML)
 
-            index = self.produtos(
-                oXML=oXML, el_det=el_det, max_index=nId,
-                list_desc=list_desc, list_cod_prod=list_cod_prod)
+#             index = self.produtos(
+#                 oXML=oXML, el_det=el_det, max_index=nId,
+#                 list_desc=list_desc, list_cod_prod=list_cod_prod)
 
             tamanho_ocupado += self.calculo_issqn(oXML=oXML)
             self.adicionais(oXML=oXML, tamanho_diminuir=tamanho_ocupado)
@@ -819,8 +819,7 @@ obsCont[@xCampo='NomeVendedor']")
 
         nWidth_Prod = nMr - 135 - self.nLeft - 11
         nCol_ = self.nLeft + 20 + (nWidth_Prod / 2)
-        self.stringcenter(nCol_, self.nlin + 5.5,
-                          'DESCRIÇÃO DO PRODUTO/SERVIÇO')
+        self.stringcenter(nCol_, self.nlin + 5.5, 'DESCRIÇÃO DO PRODUTO/SERVIÇO')
 
         # Conteúdo campos
         self.canvas.setFont('NimbusSanL-Regu', 5)
@@ -836,13 +835,10 @@ obsCont[@xCampo='NomeVendedor']")
 
             item = el_det[id]
             el_prod = item.find(".//{http://www.portalfiscal.inf.br/nfe}prod")
-            el_imp = item.find(
-                ".//{http://www.portalfiscal.inf.br/nfe}imposto")
+            el_imp = item.find(".//{http://www.portalfiscal.inf.br/nfe}imposto")
 
-            el_imp_ICMS = el_imp.find(
-                ".//{http://www.portalfiscal.inf.br/nfe}ICMS")
-            el_imp_IPI = el_imp.find(
-                ".//{http://www.portalfiscal.inf.br/nfe}IPI")
+            el_imp_ICMS = el_imp.find(".//{http://www.portalfiscal.inf.br/nfe}ICMS")
+            el_imp_IPI = el_imp.find(".//{http://www.portalfiscal.inf.br/nfe}IPI")
             cCST = tagtext(oNode=el_imp_ICMS, cTag='orig') + \
                 (tagtext(oNode=el_imp_ICMS, cTag='CST') or
                  tagtext(oNode=el_imp_ICMS, cTag='CSOSN'))

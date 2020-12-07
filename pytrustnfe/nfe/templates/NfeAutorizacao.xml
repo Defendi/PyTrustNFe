@@ -143,8 +143,12 @@
             {% endif %}
             {% if NFe.infNFe.retirada is defined %}
             <retirada>
-                <CNPJ>{{ NFe.infNFe.retirada.CNPJ }}</CNPJ>
-                <CPF>{{ NFe.infNFe.retirada.CPF }}</CPF>
+                {% if NFe.infNFe.retirada.tipo == 'person' -%}
+                    <CPF>{{ NFe.infNFe.retirada.cnpj_cpf }}</CPF>
+                {% endif %}
+                {% if NFe.infNFe.retirada.tipo == 'company' -%}
+                    <CNPJ>{{  NFe.infNFe.retirada.cnpj_cpf }}</CNPJ>
+                {% endif %}
                 <xNome>{{ NFe.infNFe.retirada.xNome|normalize|escape }}</xNome>
                 <xLgr>{{ NFe.infNFe.retirada.xLgr|normalize|escape }}</xLgr>
                 <nro>{{ NFe.infNFe.retirada.nro }}</nro>
@@ -163,8 +167,12 @@
             {% endif %}
             {% if NFe.infNFe.entrega is defined %}
             <entrega>
-                <CNPJ>{{ NFe.infNFe.entrega.CNPJ }}</CNPJ>
-                <CPF>{{ NFe.infNFe.entrega.CPF }}</CPF>
+                {% if NFe.infNFe.entrega.tipo == 'person' -%}
+                    <CPF>{{ NFe.infNFe.entrega.cnpj_cpf }}</CPF>
+                {% endif %}
+                {% if NFe.infNFe.entrega.tipo == 'company' -%}
+                    <CNPJ>{{  NFe.infNFe.entrega.cnpj_cpf }}</CNPJ>
+                {% endif %}
                 <xNome>{{ NFe.infNFe.entrega.xNome|normalize|escape }}</xNome>
                 <xLgr>{{ NFe.infNFe.entrega.xLgr|normalize|escape }}</xLgr>
                 <nro>{{ NFe.infNFe.entrega.nro }}</nro>
