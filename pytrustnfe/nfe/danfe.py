@@ -438,7 +438,7 @@ class danfe(object):
         cEnd = '%s, %s %s' % (tagtext(oNode=elem_dest, cTag='xLgr'),
                               tagtext(oNode=elem_dest, cTag='nro'),
                               tagtext(oNode=elem_dest, cTag='xCpl'))
-        if len(cEnd) > 60:
+        if len(cEnd) > 54:
             self.canvas.setFont("NimbusSanL-Regu", 6)
             self.string(self.nLeft + 1, self.nlin + 12.4, cEnd[:51])
             self.string(self.nLeft + 1, self.nlin + 14.4, cEnd[51:])
