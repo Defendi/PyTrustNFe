@@ -203,9 +203,9 @@ class danfe(object):
             self.impostos(oXML=oXML)
             self.transportes(oXML=oXML)
 
-#             index = self.produtos(
-#                 oXML=oXML, el_det=el_det, max_index=nId,
-#                 list_desc=list_desc, list_cod_prod=list_cod_prod)
+            index = self.produtos(
+                oXML=oXML, el_det=el_det, max_index=nId,
+                list_desc=list_desc, list_cod_prod=list_cod_prod)
 
             tamanho_ocupado += self.calculo_issqn(oXML=oXML)
             self.adicionais(oXML=oXML, tamanho_diminuir=tamanho_ocupado)
